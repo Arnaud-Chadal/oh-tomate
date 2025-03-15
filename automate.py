@@ -94,7 +94,7 @@ class Automate:
                     newIsLast=0
                     
                     
-                    if ((not newIsLast) & nodeObj.isLast):
+                    if (not newIsLast) & nodeObj.isLast:
                         newIsLast=1
                     if nodeObj.name not in newName:
                         newName.add(str(nodeObj.name))
