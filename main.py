@@ -1,5 +1,6 @@
 import node
 import automate
+import graphicWindow
 
 file = open("./automates/temoin.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -69,3 +70,5 @@ for group in allautos:
 
 firstauto = automate.Automate(alphabet, nodeTab)
 print(firstauto)
+
+graphicWindow.Main().run()
