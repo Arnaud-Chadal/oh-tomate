@@ -69,3 +69,6 @@ for group in allautos:
 
 firstauto = automate.Automate(alphabet, nodeTab)
 print(firstauto)
+print("\n====================\n")
+firstauto.toComplement()
+print(firstauto)

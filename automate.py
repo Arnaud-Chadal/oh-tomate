@@ -40,7 +40,8 @@ class Automate:
         pass
 
     def toComplement(self):
-        pass
+        for node in self.nodeList :
+            node.isLast = not node.isLast
 
     def toStandardize(self):
         pass
