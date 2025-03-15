@@ -39,6 +39,7 @@ for groupOfautos in allautos:
 nodeTab = []
 for groupNumber in range(len(allautos)):
     for auto in allautos[groupNumber]:
+        isAlreadyHere = False
         newNode = node.Node(auto[0], False, False)
         if groupNumber == 0:
             newNode.isInit = True
@@ -59,7 +60,8 @@ for groupNumber in range(len(allautos)):
                 nodeTab.append(newNode)
         if groupNumber == 4:
             nodeTab.append(newNode)
-        automateNameToObject[auto[0]] = newNode
+        if not isAlreadyHere :
+            automateNameToObject[auto[0]] = newNode
 
 for group in allautos:
     for auto in group:
@@ -69,6 +71,6 @@ for group in allautos:
 
 firstauto = automate.Automate(alphabet, nodeTab)
 print(firstauto)
-print("\n====================\n")
-firstauto.toComplement()
+print("\n=======================\n")
+firstauto.toComplete()
 print(firstauto)
