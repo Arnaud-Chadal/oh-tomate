@@ -51,10 +51,7 @@ class Automate:
     def toDetermine(self):
         shouldWeContinue=0
         alphabetLen=len(self.alphabet)
-        newNodeTab= []
         oldInit=[]
-        oldStates=[]
-        traductionTable=[]
         newIsLast=0
         transitions=[]
         newTransitions=[]
@@ -69,8 +66,6 @@ class Automate:
                 oldInit.append(nodeObj)
                 if not(newIsLast) & nodeObj.isLast:
                     newIsLast=1
-            else:
-                oldStates.append(nodeObj)
         newNode=Node(str(newNodePlace),1,newIsLast)
         newNodePlace+=1
         newNodes.append(newNode)
