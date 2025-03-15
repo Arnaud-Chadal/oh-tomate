@@ -1,0 +1,37 @@
+# Ignorer les fichiers compilés Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignorer les dossiers d'environnement virtuel
+venv/
+.env/
+*.venv
+
+# Ignorer les fichiers de configuration et de dépendances
+*.log
+*.ini
+*.toml
+*.cfg
+
+# Ignorer les fichiers générés par des outils
+.mypy_cache/
+.pytest_cache/
+.tox/
+.coverage
+htmlcov/
+
+# Ignorer les fichiers de dépendances
+Pipfile
+Pipfile.lock
+poetry.lock
+
+# Ignorer les fichiers liés aux IDE
+.vscode/
+.idea/
+*.iml
+
+# Ignorer les fichiers de build
+build/
+dist/
+*.egg-info/
