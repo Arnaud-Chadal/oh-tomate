@@ -1,3 +1,6 @@
+import node
+
+
 class Automate:
 
     def __init__(
@@ -49,4 +52,17 @@ class Automate:
         pass
 
     def toStandardize(self):
-        pass
+        newNode = node.Node("0", True, False)
+        nodeIndex = 0
+        while self.nodeList[nodeIndex].isInit == True:
+            if self.nodeList[nodeIndex].isLast == True:
+                newNode.isLast = True
+            for link in self.nodeList[nodeIndex].linkList:
+                newNode.addLinkToLinkList(link)
+            self.nodeList[nodeIndex].name = str(int(self.nodeList[nodeIndex].name) + 1)
+            self.nodeList[nodeIndex].isInit = False
+            nodeIndex += 1
+        while nodeIndex < len(self.nodeList):
+            self.nodeList[nodeIndex].name = str(int(self.nodeList[nodeIndex].name) + 1)
+            nodeIndex += 1
+        self.nodeList.insert(0, newNode)
