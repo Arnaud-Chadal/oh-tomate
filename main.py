@@ -1,7 +1,7 @@
 import node
 import automate
 
-file = open("./automates/test2.txt", "r")
+file = open("./automates/automateTest17.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
 
 fileLines = [line.rstrip() for line in file]
@@ -87,12 +87,12 @@ if deterministe:
 else:
     print("automate non déterministe")
 print(firstauto)
-print("\n=======================\n")
-firstauto.toComplete()
+# print("\n=======================\n")
+# firstauto.toComplete()
 
-print(firstauto)
-print("\n=======================\n")
+# print(firstauto)
+# print("\n=======================\n")
 
-firstauto.toMinimize()
-print(firstauto)
-print("\n=======================\n")
+# firstauto.toMinimize()
+# print(firstauto)
+# print("\n=======================\n")

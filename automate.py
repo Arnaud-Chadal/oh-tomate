@@ -127,12 +127,13 @@ class Automate:
             letter=0
 
             for newTransition in newTransitions[i]:
-                newNodes[i].addLinkToLinkList([self.alphabet[letter],newNodes[newNames.index(newTransition)]])
+                if len(newTransition) != 0:
+                    newNodes[i].addLinkToLinkList([self.alphabet[letter],newNodes[newNames.index(newTransition)]])
                 letter+=1
 
         #récupérer newNames
-        self.nodeList=newNodes
-        
+        self.nodeList=newNodes.copy()
+        print(newNames)
         
 
     def toMinimize(self):
