@@ -10,6 +10,7 @@ class Automate:
     ):
         self.alphabet = alphabet
         self.nodeList = nodeList
+        self.backupNodeList = [nodeList.copy(), [], [], []]
         self.nodeInitList = []
         self.nodeLastList = []
         for node in self.nodeList:
@@ -123,7 +124,7 @@ class Automate:
                             transitions[transitionPlace-1][ord(link[0])-97].append(link[1])
                             newTransitions[transitionPlace-1][ord(link[0])-97].add(link[1].name)
                                 
-                if newName not in newNames:
+                if newName not in newNames and newName != set():
                         shouldWeContinue=1
                         newNames.append(newName)
                         newNode=node.Node(str(newNodePlace),0,newIsLast)
@@ -152,6 +153,7 @@ class Automate:
             if (n.isLast):
                 self.nodeLastList.append(n)
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
+        self.backupNodeList[1] = newNames
         print(newNames)
         
 
@@ -214,6 +216,7 @@ class Automate:
             for i in range(len(partition[newStateNumber])):
                 partition[newStateNumber][i] = partition[newStateNumber][i].getName()
         print(partition)
+        self.backupNodeList[3] = partition
         newNode = []
         newNodeDico = {}
         import node
@@ -240,7 +243,14 @@ class Automate:
                 varBin = nodeVar
         if varBin == 0 :
             varBin = node.Node("Bin", 0, 0)
+            varBin.bin = True
             self.nodeList.append(varBin)
+            print(self.backupNodeList)
+            if self.backupNodeList[1] == []:
+                self.backupNodeList[2] = self.backupNodeList[0].copy()
+            else:
+                self.backupNodeList[2] = self.backupNodeList[1].copy()
+            self.backupNodeList[2].append("Bin")
 
         for nodeVar in self.nodeList :
             for letter in self.alphabet :
@@ -250,6 +260,7 @@ class Automate:
                         linkExists = True
                 if not linkExists :
                     nodeVar.linkList.append([letter, varBin])
+
 
 
     def toComplement(self):
@@ -357,3 +368,52 @@ class Automate:
         if len(wordCopy) == 0 and node.isLast:
             return True
         return False
+    
+    def printTransitionTables(self):
+        
+        string = "========= Initial Nodes =========\t"
+        if (self.backupNodeList[1] != []):
+            string += "========= [Previous array Nodes] -> New Determined node =========\t"
+        if (self.backupNodeList[2] != []):
+            string += "========= [Previous Array Nodes] -> Complete node =========\t"
+        if (self.backupNodeList[3] != []):
+            string += "========= [Previous Array Nodes] -> New Minimized node =========\t"
+        string += "\n"
+        
+        print(self.backupNodeList)
+        
+        lenInitial = len(self.backupNodeList[0])
+        lenDetermined = len(self.backupNodeList[1])
+        lenComplete = len(self.backupNodeList[2])
+        lenMinimized = len(self.backupNodeList[3])
+        
+        for nIndex in range(max(lenInitial, lenDetermined, lenMinimized, lenComplete)):
+            if (nIndex < lenInitial):
+                string += f"{self.backupNodeList[0][nIndex].getName()}\t".center(35)
+            else:
+                string += " \t".center(35)
+            if (nIndex < lenDetermined):
+                string += f"{self.backupNodeList[1][nIndex]} -> {nIndex}\t".center(58)
+            elif (lenDetermined != 0):
+                string += "\t\t\t".center(58)
+            if (lenDetermined == 0):
+                if (nIndex < lenComplete):
+                    if (self.backupNodeList[2][nIndex] != "Bin"):
+                        string += f"{self.backupNodeList[2][nIndex].getName()}\t".center(58)
+                    else:
+                        string += f"{self.backupNodeList[2][nIndex]}\t".center(58)
+                elif (lenComplete != 0):
+                    string += "\t\t\t".center(58)
+            else:
+                if (nIndex < lenComplete):
+                    if (self.backupNodeList[2][nIndex] != "Bin"):
+                        string += f"{self.backupNodeList[2][nIndex]} -> {nIndex}\t".center(58)
+                    else:
+                        string += f"{self.backupNodeList[2][nIndex]}\t".center(58)
+                elif (lenComplete != 0):
+                    string += "\t\t\t".center(58)
+            if (nIndex < lenMinimized):
+                string += f"{self.backupNodeList[3][nIndex]} -> {self.nodeList[nIndex].getName()}\t".center(63)
+            string += "\n"
+        
+        print(string)
