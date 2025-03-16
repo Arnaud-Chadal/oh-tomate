@@ -24,9 +24,12 @@ class Automate:
         pass
 
     def isStantard(self):
-        if(self.nodeList[1].isInit == True):   # If there is more than one initial node
-           return False
+        numberOfInitialNodesIsOk = False
         for node in self.nodeList:
+            if node.isInit == True and numberOfInitialNodesIsOk == True:
+                return False
+            if node.isInit == True:
+                numberOfInitialNodesIsOk = True
             for link in node.linkList:
                 if link[1].name == self.nodeList[0].name:        # If there is a link to the initial node
                     return False
@@ -128,12 +131,13 @@ class Automate:
             letter=0
 
             for newTransition in newTransitions[i]:
-                newNodes[i].addLinkToLinkList([self.alphabet[letter],newNodes[newNames.index(newTransition)]])
+                if len(newTransition) != 0:
+                    newNodes[i].addLinkToLinkList([self.alphabet[letter],newNodes[newNames.index(newTransition)]])
                 letter+=1
 
         #récupérer newNames
-        self.nodeList=newNodes
-        
+        self.nodeList=newNodes.copy()
+        print(newNames)
         
 
     def toMinimize(self):
@@ -222,9 +226,8 @@ class Automate:
 
     def toStandardize(self):
         newNode = node.Node(str(len(self.nodeList)), True, False)
-        nodeIndex = 0
-        while self.nodeList[nodeIndex].isInit == True:
-            if self.nodeList[nodeIndex].isLast == True:
+        for nodeIndex in range(len(self.nodeList)):
+            if self.nodeList[nodeIndex].isInit == True and self.nodeList[nodeIndex].isLast == True:
                 newNode.isLast = True
             for link in self.nodeList[nodeIndex].linkList:
                 newNode.addLinkToLinkList(link)
