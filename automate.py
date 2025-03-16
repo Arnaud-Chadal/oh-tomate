@@ -59,82 +59,82 @@ class Automate:
 
     # Méthodes d'action :
 
-    def toDetermine(self):
+    # def toDetermine(self):
 
-        shouldWeContinue=0
-        alphabetLen=len(self.alphabet)
-        oldInit=[]
-        newIsLast=0
-        transitions=[]
-        newTransitions=[]
-        transitionPlace=0
-        newName=set()
-        newNames=[]
-        newNodes=[]
-        newNodePlace=0
-        for nodeObj in self.nodeList:
-            if nodeObj.isInit:
-                newIsLast=0
-                oldInit.append(nodeObj)
-                if not(newIsLast) & nodeObj.isLast:
-                    newIsLast=1
-        newNode=node.Node(str(newNodePlace),1,newIsLast)
-        newNodePlace+=1
-        newNodes.append(newNode)
-        transitions.append([[] for i in range (0,len(self.alphabet))])
-        newTransitions.append([set() for i in range (0,len(self.alphabet))])
-        transitionPlace+=1
+    #     shouldWeContinue=0
+    #     alphabetLen=len(self.alphabet)
+    #     oldInit=[]
+    #     newIsLast=0
+    #     transitions=[]
+    #     newTransitions=[]
+    #     transitionPlace=0
+    #     newName=set()
+    #     newNames=[]
+    #     newNodes=[]
+    #     newNodePlace=0
+    #     for nodeObj in self.nodeList:
+    #         if nodeObj.isInit:
+    #             newIsLast=0
+    #             oldInit.append(nodeObj)
+    #             if not(newIsLast) & nodeObj.isLast:
+    #                 newIsLast=1
+    #     newNode=node.Node(str(newNodePlace),1,newIsLast)
+    #     newNodePlace+=1
+    #     newNodes.append(newNode)
+    #     transitions.append([[] for i in range (0,len(self.alphabet))])
+    #     newTransitions.append([set() for i in range (0,len(self.alphabet))])
+    #     transitionPlace+=1
 
-        for initState in oldInit:
-            newName.add(str(initState.name))
-            for link in initState.linkList:
-                transitions[transitionPlace-1][ord(link[0])-97].append(link[1])
-                newTransitions[transitionPlace-1][ord(link[0])-97].add(link[1].name)
-                shouldWeContinue=1
-        newNames.append(newName)
+    #     for initState in oldInit:
+    #         newName.add(str(initState.name))
+    #         for link in initState.linkList:
+    #             transitions[transitionPlace-1][ord(link[0])-97].append(link[1])
+    #             newTransitions[transitionPlace-1][ord(link[0])-97].add(link[1].name)
+    #             shouldWeContinue=1
+    #     newNames.append(newName)
         
-        while shouldWeContinue:
-            shouldWeContinue=0
+    #     while shouldWeContinue:
+    #         shouldWeContinue=0
 
-            for nodeList in transitions[transitionPlace-1]:
+    #         for nodeList in transitions[transitionPlace-1]:
                 
-                newName=set()
-                transitions.append([[] for i in range (0,len(self.alphabet))])
-                newTransitions.append([set() for i in range (0,len(self.alphabet))])
-                transitionPlace+=1
-                for nodeObj in nodeList:
-                    newIsLast=0
+    #             newName=set()
+    #             transitions.append([[] for i in range (0,len(self.alphabet))])
+    #             newTransitions.append([set() for i in range (0,len(self.alphabet))])
+    #             transitionPlace+=1
+    #             for nodeObj in nodeList:
+    #                 newIsLast=0
 
-                    if (not newIsLast) & nodeObj.isLast:
-                        newIsLast=1
+    #                 if (not newIsLast) & nodeObj.isLast:
+    #                     newIsLast=1
 
-                    if nodeObj.name not in newName:
-                        newName.add(str(nodeObj.name))
+    #                 if nodeObj.name not in newName:
+    #                     newName.add(str(nodeObj.name))
                         
-                        for link in nodeObj.linkList:  
-                            transitions[transitionPlace-1][ord(link[0])-97].append(link[1])
-                            newTransitions[transitionPlace-1][ord(link[0])-97].add(link[1].name)
+    #                     for link in nodeObj.linkList:  
+    #                         transitions[transitionPlace-1][ord(link[0])-97].append(link[1])
+    #                         newTransitions[transitionPlace-1][ord(link[0])-97].add(link[1].name)
                                 
-                if newName not in newNames:
-                        shouldWeContinue=1
-                        newNames.append(newName)
-                        newNode=node.Node(str(newNodePlace),0,newIsLast)
-                        newNodePlace+=1
-                        newNodes.append(newNode)
-                else:
-                    del transitions[transitionPlace-1]
-                    del newTransitions[transitionPlace-1]
-                    transitionPlace-=1
+    #             if newName not in newNames:
+    #                     shouldWeContinue=1
+    #                     newNames.append(newName)
+    #                     newNode=node.Node(str(newNodePlace),0,newIsLast)
+    #                     newNodePlace+=1
+    #                     newNodes.append(newNode)
+    #             else:
+    #                 del transitions[transitionPlace-1]
+    #                 del newTransitions[transitionPlace-1]
+    #                 transitionPlace-=1
 
-        for i in range (0, len(newNames)):
-            letter=0
+    #     for i in range (0, len(newNames)):
+    #         letter=0
 
-            for newTransition in newTransitions[i]:
-                newNodes[i].addLinkToLinkList([self.alphabet[letter],newNodes[newNames.index(newTransition)]])
-                letter+=1
+    #         for newTransition in newTransitions[i]:
+    #             newNodes[i].addLinkToLinkList([self.alphabet[letter],newNodes[newNames.index(newTransition)]])
+    #             letter+=1
 
-        #récupérer newNames
-        self.nodeList=newNodes
+    #     #récupérer newNames
+    #     self.nodeList=newNodes
         
         
 
@@ -229,6 +229,7 @@ class Automate:
                 newNode.isLast = True
             if self.nodeList[nodeIndex].isInit == True:
                 for link in self.nodeList[nodeIndex].linkList:
-                    newNode.addLinkToLinkList(link)
+                    if link not in newNode.linkList:
+                        newNode.addLinkToLinkList(link)
                 self.nodeList[nodeIndex].isInit = False
         self.nodeList.insert(0, newNode)
