@@ -10,6 +10,14 @@ class Automate:
     ):
         self.alphabet = alphabet
         self.nodeList = nodeList
+        self.nodeInitList = []
+        self.nodeLastList = []
+        for node in self.nodeList:
+            if (node.isInit):
+                self.nodeInitList.append(node)
+            if (node.isLast):
+                self.nodeLastList.append(node)
+        self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
 
     def __str__(self):
         string = ""
@@ -136,6 +144,14 @@ class Automate:
 
         #récupérer newNames
         self.nodeList=newNodes.copy()
+        self.nodeInitList = []
+        self.nodeLastList = []
+        for n in self.nodeList:
+            if (n.isInit):
+                self.nodeInitList.append(n)
+            if (n.isLast):
+                self.nodeLastList.append(n)
+        self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
         print(newNames)
         
 
@@ -198,6 +214,24 @@ class Automate:
             for i in range(len(partition[newStateNumber])):
                 partition[newStateNumber][i] = partition[newStateNumber][i].getName()
         print(partition)
+        newNode = []
+        newNodeDico = {}
+        import node
+        for groupNum in range(len(newPartition)):
+            n = node.Node(newPartition[groupNum][0].getName(), newPartition[groupNum][0].isInit, newPartition[groupNum][0].isLast)
+            newNode.append(n)
+            newNodeDico[n] = partition[groupNum]
+        automateNameToObject = {}
+        for i in self.nodeList:
+            automateNameToObject[i.getName()] = transition[i]
+        for n in newNode:
+            for linkNum in range(len(automateNameToObject[n.getName()])):
+                for key, val in newNodeDico.items():
+                    if partition[automateNameToObject[n.getName()][linkNum]] == val:
+                        n.addLinkToLinkList([self.alphabet[linkNum], key])
+            
+        self.nodeList = newNode.copy()
+
 
     def toComplete(self):
         varBin = 0
@@ -301,3 +335,25 @@ class Automate:
                     line = line.rstrip(',')
                     file.write(line + '\n')
         file.close()
+
+    def recognize(self, word: str) -> bool:
+        if not self.isDetermined():
+            self.toDetermine()
+        for c in word:
+            if c not in self.alphabet:
+                print("Not same alphabet")
+                return False
+        wordCopy = word
+        node = self.nodeInitList[0]
+        cont = True
+        while (len(wordCopy) > 0 and cont):
+            cont = False
+            for transitions in node.linkList:
+                if transitions[0] == wordCopy[0]:
+                    cont = True
+                    wordCopy = wordCopy[1:]
+                    node = transitions[1]
+                    break
+        if len(wordCopy) == 0 and node.isLast:
+            return True
+        return False
