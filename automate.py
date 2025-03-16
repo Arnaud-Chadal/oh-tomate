@@ -75,7 +75,7 @@ class Automate:
                 oldInit.append(nodeObj)
                 if not(newIsLast) & nodeObj.isLast:
                     newIsLast=1
-        newNode=Node(str(newNodePlace),1,newIsLast)
+        newNode=node.Node(str(newNodePlace),1,newIsLast)
         newNodePlace+=1
         newNodes.append(newNode)
         transitions.append([[] for i in range (0,len(self.alphabet))])
@@ -115,7 +115,7 @@ class Automate:
                 if newName not in newNames:
                         shouldWeContinue=1
                         newNames.append(newName)
-                        newNode=Node(str(newNodePlace),0,newIsLast)
+                        newNode=node.Node(str(newNodePlace),0,newIsLast)
                         newNodePlace+=1
                         newNodes.append(newNode)
                 else:
