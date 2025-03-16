@@ -23,7 +23,13 @@ class Automate:
         pass
 
     def isStantard(self):
-        pass
+        if(self.nodeList[1].isInit == True):   # If there is more than one initial node
+           return False
+        for node in self.nodeList:
+            for link in node.linkList:
+                if link[1].name == self.nodeList[0].name:        # If there is a link to the initial node
+                    return False
+        return True
 
     def isDetermined(self):
         numberOfInitStates=0
@@ -214,4 +220,13 @@ class Automate:
 
 
     def toStandardize(self):
-        pass
+        newNode = node.Node(str(len(self.nodeList)), True, False)
+        nodeIndex = 0
+        while self.nodeList[nodeIndex].isInit == True:
+            if self.nodeList[nodeIndex].isLast == True:
+                newNode.isLast = True
+            for link in self.nodeList[nodeIndex].linkList:
+                newNode.addLinkToLinkList(link)
+            self.nodeList[nodeIndex].isInit = False
+            nodeIndex += 1
+        self.nodeList.insert(0, newNode)

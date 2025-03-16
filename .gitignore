@@ -1,8 +1,18 @@
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
+
+# Ignorer les fichiers liés aux IDE
+.vscode/
+.idea/
+*.iml
+
+# Ignorer les fichiers de build
+build/
+dist/
+*.egg-info/
+=======
 # C extensions
 *.so
 
