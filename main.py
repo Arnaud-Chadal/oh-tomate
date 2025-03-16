@@ -70,7 +70,24 @@ for group in allautos:
             currentNode.addLinkToLinkList([link[0], automateNameToObject[link[1]]])
 
 firstauto = automate.Automate(alphabet, nodeTab)
+deterministe=firstauto.isDetermined()
+if deterministe:
+    print("automate déterministe")
+else:
+    print("automate non déterministe")
+print(firstauto)
+      
+print("\n=======================\n")
+firstauto.toDetermine()
+
+deterministe=firstauto.isDetermined()
+if deterministe:
+    print("automate déterministe")
+else:
+    print("automate non déterministe")
 print(firstauto)
 print("\n=======================\n")
 firstauto.toComplete()
+
 print(firstauto)
+print("\n=======================\n")
