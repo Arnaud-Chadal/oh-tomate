@@ -75,9 +75,9 @@ class Automate:
         newNodePlace=0
         for nodeObj in self.nodeList:
             if nodeObj.isInit:
-                newIsLast=0
                 oldInit.append(nodeObj)
-                if not(newIsLast) & nodeObj.isLast:
+                if (not(newIsLast) and nodeObj.isLast):
+                    print(nodeObj.name, nodeObj.isLast)
                     newIsLast=1
         newNode=node.Node(str(newNodePlace),1,newIsLast)
         newNodePlace+=1
@@ -98,15 +98,15 @@ class Automate:
             shouldWeContinue=0
 
             for nodeList in transitions[transitionPlace-1]:
-                
+                newIsLast=0
                 newName=set()
                 transitions.append([[] for i in range (0,len(self.alphabet))])
                 newTransitions.append([set() for i in range (0,len(self.alphabet))])
                 transitionPlace+=1
                 for nodeObj in nodeList:
-                    newIsLast=0
+                    
 
-                    if (not newIsLast) & nodeObj.isLast:
+                    if (not newIsLast) and nodeObj.isLast:
                         newIsLast=1
 
                     if nodeObj.name not in newName:
