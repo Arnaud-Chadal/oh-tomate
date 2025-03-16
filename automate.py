@@ -228,10 +228,11 @@ class Automate:
         for nodeIndex in range(len(self.nodeList)):
             if self.nodeList[nodeIndex].isInit == True and self.nodeList[nodeIndex].isLast == True:
                 newNode.isLast = True
-            for link in self.nodeList[nodeIndex].linkList:
-                newNode.addLinkToLinkList(link)
-            self.nodeList[nodeIndex].isInit = False
-            nodeIndex += 1
+            if self.nodeList[nodeIndex].isInit == True:
+                for link in self.nodeList[nodeIndex].linkList:
+                    if link not in newNode.linkList:
+                        newNode.addLinkToLinkList(link)
+                self.nodeList[nodeIndex].isInit = False
         self.nodeList.insert(0, newNode)
 
     def saveToFile(self, fileName):
