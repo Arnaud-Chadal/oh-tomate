@@ -17,9 +17,8 @@ class Main :
             self.nodeList.append(graphicNode.GraphicNode(nbr*200, 200, nodeVar))
 
 
-
     def run(self) :
-        while self.running: 
+        while self.running : 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -35,6 +34,12 @@ class Main :
                 if self.grabbed == graphNode :
                     graphNode.setPos(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
                 self.screen.blit(graphNode.image, (graphNode.x, graphNode.y))
-                text_surface = self.my_font.render(graphNode.nodeVar.name, False, (255, 255, 255))
+                text_surface = self.my_font.render(graphNode.nodeVar.name, False, (0, 0, 0))
                 self.screen.blit(text_surface, (graphNode.x, graphNode.y))
+                for link in graphNode.nodeVar.linkList :
+                    for graphNode2 in self.nodeList :
+                        if graphNode2.nodeVar == link[1] :
+                            pygame.draw.line(self.screen, (255, 255, 255), (graphNode.x+32, graphNode.y+32), (graphNode2.x+32, graphNode2.y+32))
+                            text_surface = self.my_font.render(link[0], False, (255, 255, 255))
+                            self.screen.blit(text_surface, (graphNode.x+(graphNode2.x-graphNode.x)/2, graphNode.y+(graphNode2.y-graphNode.y)/2))
             pygame.display.flip()
