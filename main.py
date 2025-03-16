@@ -1,7 +1,7 @@
 import node
 import automate
 
-file = open("./automates/temoin.txt", "r")
+file = open("./automates/test2.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
 
 fileLines = [line.rstrip() for line in file]
@@ -36,6 +36,8 @@ for groupOfautos in allautos:
                     autoNumber
                 ][1][transitionNumber].split("/")
 
+print(allautos)
+
 nodeTab = []
 for groupNumber in range(len(allautos)):
     for auto in allautos[groupNumber]:
@@ -51,7 +53,6 @@ for groupNumber in range(len(allautos)):
             newNode.isInit = newNode.isLast = True
             nodeTab.append(newNode)
         if groupNumber == 3:
-            isAlreadyHere = False
             for n in nodeTab:
                 if auto[0] == n.getName():
                     isAlreadyHere = True
@@ -60,7 +61,7 @@ for groupNumber in range(len(allautos)):
                 nodeTab.append(newNode)
         if groupNumber == 4:
             nodeTab.append(newNode)
-        if not isAlreadyHere :
+        if not isAlreadyHere:
             automateNameToObject[auto[0]] = newNode
 
 for group in allautos:
@@ -89,5 +90,9 @@ print(firstauto)
 print("\n=======================\n")
 firstauto.toComplete()
 
+print(firstauto)
+print("\n=======================\n")
+
+firstauto.toMinimize()
 print(firstauto)
 print("\n=======================\n")
