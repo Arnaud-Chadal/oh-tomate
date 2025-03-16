@@ -1,4 +1,5 @@
 import node
+import os
 
 class Automate:
 
@@ -12,7 +13,6 @@ class Automate:
 
     def __str__(self):
         string = ""
-        print(self.nodeList)
         for node in self.nodeList:
             string += node.__str__() + "\n"
         return string
@@ -74,9 +74,9 @@ class Automate:
         newNodePlace=0
         for nodeObj in self.nodeList:
             if nodeObj.isInit:
-                newIsLast=0
                 oldInit.append(nodeObj)
-                if not(newIsLast) & nodeObj.isLast:
+                if (not(newIsLast) and nodeObj.isLast):
+                    print(nodeObj.name, nodeObj.isLast)
                     newIsLast=1
         newNode=node.Node(str(newNodePlace),1,newIsLast)
         newNodePlace+=1
@@ -97,15 +97,15 @@ class Automate:
             shouldWeContinue=0
 
             for nodeList in transitions[transitionPlace-1]:
-                
+                newIsLast=0
                 newName=set()
                 transitions.append([[] for i in range (0,len(self.alphabet))])
                 newTransitions.append([set() for i in range (0,len(self.alphabet))])
                 transitionPlace+=1
                 for nodeObj in nodeList:
-                    newIsLast=0
+                    
 
-                    if (not newIsLast) & nodeObj.isLast:
+                    if (not newIsLast) and nodeObj.isLast:
                         newIsLast=1
 
                     if nodeObj.name not in newName:
@@ -130,12 +130,13 @@ class Automate:
             letter=0
 
             for newTransition in newTransitions[i]:
-                newNodes[i].addLinkToLinkList([self.alphabet[letter],newNodes[newNames.index(newTransition)]])
+                if len(newTransition) != 0:
+                    newNodes[i].addLinkToLinkList([self.alphabet[letter],newNodes[newNames.index(newTransition)]])
                 letter+=1
 
         #récupérer newNames
-        self.nodeList=newNodes
-        
+        self.nodeList=newNodes.copy()
+        print(newNames)
         
 
     def toMinimize(self):
@@ -233,3 +234,70 @@ class Automate:
                         newNode.addLinkToLinkList(link)
                 self.nodeList[nodeIndex].isInit = False
         self.nodeList.insert(0, newNode)
+
+    def saveToFile(self, fileName):
+        numberOfInitialStates = 0
+        numberOfFinalStates = 0
+        numberOfInitialAndFinalStates = 0
+        thereIsABin = False
+        for node in self.nodeList:
+            if node.isInit and not node.isLast:
+                numberOfInitialStates += 1
+            elif node.isInit:
+                numberOfInitialAndFinalStates += 1
+            elif node.isLast:
+                numberOfFinalStates += 1
+            if node.bin:
+                thereIsABin = True
+
+        filePath = "./automates/" + fileName + ".txt"
+        if os.path.exists(filePath):
+            return False
+        file = open(filePath, "w")
+        file.write(str(len(self.alphabet)) + '\n')
+        file.write(str(numberOfInitialStates) + '\n')
+        if numberOfInitialStates > 0:
+            for node in self.nodeList:
+                if node.isInit and not node.isLast:
+                    line = node.getName() + ';'
+                    for link in node.linkList:
+                        line += link[0] + '/' + link[1].getName() + ','
+                    line = line.rstrip(',')    
+                    file.write(line + '\n')
+        file.write(str(numberOfFinalStates) + '\n')
+        if numberOfFinalStates > 0:
+            for node in self.nodeList:
+                if node.isLast and not node.isInit:
+                    line = node.getName() + ';'
+                    for link in node.linkList:
+                        line += link[0] + '/' + link[1].getName() + ','
+                    line = line.rstrip(',')    
+                    file.write(line + '\n')
+        file.write(str(numberOfInitialAndFinalStates) + '\n')
+        if numberOfInitialAndFinalStates > 0:
+            for node in self.nodeList:
+                if node.isInit and node.isLast:
+                    line = node.getName() + ';'
+                    for link in node.linkList:
+                        line += link[0] + '/' + link[1].getName() + ','
+                    line = line.rstrip(',')    
+                    file.write(line + '\n')
+        file.write(str(int(thereIsABin)) + '\n')
+        if thereIsABin:
+            for node in self.nodeList:
+                if node.bin:
+                    line = node.getName() + ';'
+                    for link in node.linkList:
+                        line += link[0] + '/' + link[1].getName() + ','
+                    line = line.rstrip(',')
+                    file.write(line + '\n')
+        file.write(str(len(self.nodeList) - numberOfInitialStates - numberOfFinalStates - numberOfInitialAndFinalStates - int(thereIsABin)) + '\n')
+        if(len(self.nodeList) - numberOfInitialStates - numberOfFinalStates - numberOfInitialAndFinalStates - int(thereIsABin) > 0):
+            for node in self.nodeList:
+                if not node.isInit and not node.isLast and not node.bin:
+                    line = node.getName() + ';'
+                    for link in node.linkList:
+                        line += link[0] + '/' + link[1].getName() + ','
+                    line = line.rstrip(',')
+                    file.write(line + '\n')
+        file.close()
