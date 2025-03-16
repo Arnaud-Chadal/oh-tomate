@@ -1,4 +1,4 @@
-from node import Node
+import node
 
 class Automate:
 
@@ -132,10 +132,28 @@ class Automate:
         pass
 
     def toComplete(self):
-        pass
+        varBin = 0
+        for nodeVar in self.nodeList :
+            if nodeVar.bin :
+                varBin = nodeVar
+        if varBin == 0 :
+            varBin = node.Node("Bin", 0, 0)
+            self.nodeList.append(varBin)
+
+        for nodeVar in self.nodeList :
+            for letter in self.alphabet :
+                linkExists = False
+                for link in nodeVar.linkList :
+                    if letter == link[0] :
+                        linkExists = True
+                if not linkExists :
+                    nodeVar.linkList.append([letter, varBin])
+
 
     def toComplement(self):
-        pass
+        for nodeVar in self.nodeList :
+            nodeVar.isLast = not nodeVar.isLast
+
 
     def toStandardize(self):
         pass
