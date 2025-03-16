@@ -1,7 +1,7 @@
 import node
 import automate
 
-file = open("./automates/automateTest36.txt", "r")
+file = open("./automates/test.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
 
 fileLines = [line.rstrip() for line in file]
@@ -72,33 +72,38 @@ for group in allautos:
 
 firstauto = automate.Automate(alphabet, nodeTab)
 print(firstauto)
-# print("\n=======================\n")
+print(firstauto.nodeInitList)
+print(firstauto.nodeLastList)
+print(firstauto.nodeLastAndInitList)
+print("\n=======================\n")
 print(firstauto.isStantard())
-firstauto.toStandardize()
+#firstauto.toStandardize()
 print(firstauto)
-
-# deterministe=firstauto.isDetermined()
-# if deterministe:
-#     print("automate déterministe")
-# else:
-#     print("automate non déterministe")
-# print(firstauto)
+print("\n=======================\n")
+deterministe=firstauto.isDetermined()
+if deterministe:
+    print("automate déterministe")
+else:
+    print("automate non déterministe")
+print(firstauto)
       
-# print("\n=======================\n")
+print("\n=======================\n")
 # firstauto.toDetermine()
 
-# deterministe=firstauto.isDetermined()
-# if deterministe:
-#     print("automate déterministe")
-# else:
-#     print("automate non déterministe")
-# print(firstauto)
+deterministe=firstauto.isDetermined()
+if deterministe:
+    print("automate déterministe")
+else:
+    print("automate non déterministe")
+print(firstauto)
 
-# print("\n=======================\n")
-# firstauto.toComplete()
+print("\n=======================\n")
+firstauto.toComplete()
 
-# print(firstauto)
-# print("\n=======================\n")
+print(firstauto)
+print("\n=======================\n")
 
-# firstauto.toMinimize()
-# print(firstauto)
+firstauto.toMinimize()
+print(firstauto)
+
+print(firstauto.recognize("abababbbbb"))
