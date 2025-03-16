@@ -76,7 +76,7 @@ class Automate:
         newIsLast=0
         transitions=[]
         newTransitions=[]
-        transitionPlace=0
+        transitionPlaceToInsert=0
         newName=set()
         newNames=[]
         newNodes=[]
@@ -85,56 +85,55 @@ class Automate:
             if nodeObj.isInit:
                 oldInit.append(nodeObj)
                 if (not(newIsLast) and nodeObj.isLast):
-                    print(nodeObj.name, nodeObj.isLast)
                     newIsLast=1
         newNode=node.Node(str(newNodePlace),1,newIsLast)
         newNodePlace+=1
         newNodes.append(newNode)
         transitions.append([[] for i in range (0,len(self.alphabet))])
         newTransitions.append([set() for i in range (0,len(self.alphabet))])
-        transitionPlace+=1
+        transitionPlaceToInsert+=1
 
         for initState in oldInit:
             newName.add(str(initState.name))
             for link in initState.linkList:
-                transitions[transitionPlace-1][ord(link[0])-97].append(link[1])
-                newTransitions[transitionPlace-1][ord(link[0])-97].add(link[1].name)
+                transitions[transitionPlaceToInsert-1][ord(link[0])-97].append(link[1])
+                newTransitions[transitionPlaceToInsert-1][ord(link[0])-97].add(link[1].name)
                 shouldWeContinue=1
-        newNames.append(newName)
-        
+        if newNames != set():
+            newNames.append(newName)
+        transitionPlaceToRead=0
         while shouldWeContinue:
+            
             shouldWeContinue=0
-
-            for nodeList in transitions[transitionPlace-1]:
+            for nodeList in transitions[transitionPlaceToRead]:
                 newIsLast=0
                 newName=set()
                 transitions.append([[] for i in range (0,len(self.alphabet))])
                 newTransitions.append([set() for i in range (0,len(self.alphabet))])
-                transitionPlace+=1
+                transitionPlaceToInsert+=1
                 for nodeObj in nodeList:
-                    
-
                     if (not newIsLast) and nodeObj.isLast:
                         newIsLast=1
-
+                    
                     if nodeObj.name not in newName:
                         newName.add(str(nodeObj.name))
                         
                         for link in nodeObj.linkList:  
-                            transitions[transitionPlace-1][ord(link[0])-97].append(link[1])
-                            newTransitions[transitionPlace-1][ord(link[0])-97].add(link[1].name)
-                                
-                if newName not in newNames and newName != set():
+                            transitions[transitionPlaceToInsert-1][ord(link[0])-97].append(link[1])
+                            newTransitions[transitionPlaceToInsert-1][ord(link[0])-97].add(link[1].name)
+                           
+                if (newName not in newNames) and (newName != set()):
                         shouldWeContinue=1
                         newNames.append(newName)
                         newNode=node.Node(str(newNodePlace),0,newIsLast)
                         newNodePlace+=1
                         newNodes.append(newNode)
                 else:
-                    del transitions[transitionPlace-1]
-                    del newTransitions[transitionPlace-1]
-                    transitionPlace-=1
-
+                    del transitions[transitionPlaceToInsert-1]
+                    del newTransitions[transitionPlaceToInsert-1]
+                    transitionPlaceToInsert-=1
+            transitionPlaceToRead+=1
+       
         for i in range (0, len(newNames)):
             letter=0
 
@@ -145,6 +144,7 @@ class Automate:
 
         #récupérer newNames
         self.nodeList=newNodes.copy()
+
         self.nodeInitList = []
         self.nodeLastList = []
         for n in self.nodeList:
@@ -154,7 +154,7 @@ class Automate:
                 self.nodeLastList.append(n)
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
         self.backupNodeList[1] = newNames
-        print(newNames)
+        
         
 
     def toMinimize(self):
