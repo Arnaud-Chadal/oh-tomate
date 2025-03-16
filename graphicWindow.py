@@ -1,5 +1,6 @@
 import pygame
 import graphicNode
+import graphicLink
 
 
 class Main :
@@ -9,19 +10,23 @@ class Main :
         self.screen = pygame.display.set_mode((1920, 1080))
         self.running = True
         self.nodeList = []
+        self.linkList = []
         self.clicked = None
         self.grabbed = None
         nbr = 0
         for graphNode in nodeList :
-            nbr += 1
+            self.linkList.append([])
             self.nodeList.append(graphicNode.GraphicNode(nbr*200, 200, graphNode))
-            # for link in graphNode.nodeVar.linkList :
+            for link in graphNode.linkList :
+                self.linkList[nbr].append(graphicLink.GraphicLink(link, self.nodeList[nbr]))
+            nbr += 1
                 
 
 
 
     def run(self) :
         while self.running : 
+            #Check des events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -34,6 +39,7 @@ class Main :
                     self.clicked = self.grabbed
                     self.grabbed = None
 
+            #Affichage des noeuds
             self.screen.fill((0, 0, 0))
             for graphNode in self.nodeList :
                 if self.grabbed == graphNode :
@@ -43,10 +49,20 @@ class Main :
                 else : self.screen.blit(graphNode.image, (graphNode.x, graphNode.y))
                 text_surface = self.my_font.render(graphNode.nodeVar.name, False, (0, 0, 0))
                 self.screen.blit(text_surface, (graphNode.x+15, graphNode.y+15))
+                
+                # affichage des lignes
+                #idée : afficher des arcs plutôt que des lignes pour pas que ça se superpose
+                #pour ça, compter le nombre de transition d'un noeud vers un autre et donner des coefs de courbure selon ce nombre à intervalles réguliers
                 for link in graphNode.nodeVar.linkList :
                     for graphNode2 in self.nodeList :
                         if graphNode2.nodeVar == link[1] :
                             pygame.draw.line(self.screen, (255, 255, 255), (graphNode.x+32, graphNode.y+32), (graphNode2.x+32, graphNode2.y+32))
                             text_surface = self.my_font.render(link[0], False, (255, 255, 255))
                             self.screen.blit(text_surface, (graphNode.x+(graphNode2.x-graphNode.x)/2, graphNode.y+(graphNode2.y-graphNode.y)/2))
+                
+                #Affichage des flèches de transitions pour indiquer le sens
+                #On ne peut pas juste afficher un sprite car il faudra pouvoir cliquer dessus si on veut supprimer la transition
+                # for links in self.linkList :
+                #     for link in links :
+                #         link.draw(self.screen)
             pygame.display.flip()

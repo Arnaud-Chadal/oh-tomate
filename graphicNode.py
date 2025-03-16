@@ -6,7 +6,7 @@ class GraphicNode:
         self.x = x
         self.y = y
         self.nodeVar = nodeVar
-        self.collision = pygame.rect.Rect(x, y, 128, 128)
+        self.collision = pygame.rect.Rect(x, y, 64, 64)
 
         if nodeVar.isInit and not nodeVar.isLast :
             self.image = pygame.image.load("./images/init.png").convert_alpha()
