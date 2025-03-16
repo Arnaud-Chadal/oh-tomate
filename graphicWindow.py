@@ -12,9 +12,12 @@ class Main :
         self.clicked = None
         self.grabbed = None
         nbr = 0
-        for nodeVar in nodeList :
+        for graphNode in nodeList :
             nbr += 1
-            self.nodeList.append(graphicNode.GraphicNode(nbr*200, 200, nodeVar))
+            self.nodeList.append(graphicNode.GraphicNode(nbr*200, 200, graphNode))
+            # for link in graphNode.nodeVar.linkList :
+                
+
 
 
     def run(self) :
@@ -26,16 +29,20 @@ class Main :
                     for graphNode in self.nodeList :
                         if graphNode.collision.collidepoint(event.pos) :
                             self.grabbed = graphNode
+                            self.clicked = graphNode
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1 :
+                    self.clicked = self.grabbed
                     self.grabbed = None
 
             self.screen.fill((0, 0, 0))
             for graphNode in self.nodeList :
                 if self.grabbed == graphNode :
                     graphNode.setPos(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
-                self.screen.blit(graphNode.image, (graphNode.x, graphNode.y))
+                if self.clicked == graphNode :
+                    self.screen.blit(graphNode.image2, (graphNode.x, graphNode.y))
+                else : self.screen.blit(graphNode.image, (graphNode.x, graphNode.y))
                 text_surface = self.my_font.render(graphNode.nodeVar.name, False, (0, 0, 0))
-                self.screen.blit(text_surface, (graphNode.x, graphNode.y))
+                self.screen.blit(text_surface, (graphNode.x+15, graphNode.y+15))
                 for link in graphNode.nodeVar.linkList :
                     for graphNode2 in self.nodeList :
                         if graphNode2.nodeVar == link[1] :
