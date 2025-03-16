@@ -42,11 +42,6 @@ class Main :
                         if graphNode.collision.collidepoint(event.pos) :
                             self.grabbed = graphNode
                             self.clicked = graphNode
-                    for linkGroup in self.linkList:
-                        for links in linkGroup:
-                            if links.collision.collidepoint(event.pos) :
-                                self.grabbed = graphNode
-                                self.clicked = graphNode
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1 :
                     self.clicked = self.grabbed
                     self.grabbed = None
@@ -56,6 +51,8 @@ class Main :
             for linkGroup in self.linkList:
                 for links in linkGroup:
                     links.draw(self.screen)
+            
+            self.linkList[0][0].calculateDeltaImage()
 
             #Affichage des noeuds
             for graphNode in self.nodeList :
