@@ -13,7 +13,6 @@ class Automate:
 
     def __str__(self):
         string = ""
-        print(self.nodeList)
         for node in self.nodeList:
             string += node.__str__() + "\n"
         return string

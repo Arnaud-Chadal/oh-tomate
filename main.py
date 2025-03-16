@@ -1,7 +1,7 @@
 import node
 import automate
 
-file = open("./automates/automateTest17.txt", "r")
+file = open("./automates/automateTest36.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
 
 fileLines = [line.rstrip() for line in file]
@@ -71,22 +71,29 @@ for group in allautos:
             currentNode.addLinkToLinkList([link[0], automateNameToObject[link[1]]])
 
 firstauto = automate.Automate(alphabet, nodeTab)
-deterministe=firstauto.isDetermined()
-if deterministe:
-    print("automate déterministe")
-else:
-    print("automate non déterministe")
 print(firstauto)
-      
-print("\n=======================\n")
-firstauto.toDetermine()
+# print("\n=======================\n")
+print(firstauto.isStantard())
+firstauto.toStandardize()
+print(firstauto)
 
-deterministe=firstauto.isDetermined()
-if deterministe:
-    print("automate déterministe")
-else:
-    print("automate non déterministe")
-print(firstauto)
+# deterministe=firstauto.isDetermined()
+# if deterministe:
+#     print("automate déterministe")
+# else:
+#     print("automate non déterministe")
+# print(firstauto)
+      
+# print("\n=======================\n")
+# firstauto.toDetermine()
+
+# deterministe=firstauto.isDetermined()
+# if deterministe:
+#     print("automate déterministe")
+# else:
+#     print("automate non déterministe")
+# print(firstauto)
+
 # print("\n=======================\n")
 # firstauto.toComplete()
 
@@ -95,4 +102,3 @@ print(firstauto)
 
 # firstauto.toMinimize()
 # print(firstauto)
-# print("\n=======================\n")
