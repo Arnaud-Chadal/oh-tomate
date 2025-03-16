@@ -1,4 +1,5 @@
 from node import Node
+
 class Automate:
 
     def __init__(
@@ -49,6 +50,7 @@ class Automate:
     # Méthodes d'action :
 
     def toDetermine(self):
+
         shouldWeContinue=0
         alphabetLen=len(self.alphabet)
         oldInit=[]
@@ -92,15 +94,14 @@ class Automate:
                 transitionPlace+=1
                 for nodeObj in nodeList:
                     newIsLast=0
-                    
-                    
+
                     if (not newIsLast) & nodeObj.isLast:
                         newIsLast=1
+
                     if nodeObj.name not in newName:
                         newName.add(str(nodeObj.name))
                         
-                        for link in nodeObj.linkList:
-                                
+                        for link in nodeObj.linkList:  
                             transitions[transitionPlace-1][ord(link[0])-97].append(link[1])
                             newTransitions[transitionPlace-1][ord(link[0])-97].add(link[1].name)
                                 
@@ -114,11 +115,15 @@ class Automate:
                     del transitions[transitionPlace-1]
                     del newTransitions[transitionPlace-1]
                     transitionPlace-=1
+
         for i in range (0, len(newNames)):
             letter=0
+
             for newTransition in newTransitions[i]:
                 newNodes[i].addLinkToLinkList([self.alphabet[letter],newNodes[newNames.index(newTransition)]])
                 letter+=1
+
+        #récupérer newNames
         self.nodeList=newNodes
         
         
