@@ -1,4 +1,5 @@
 import node
+import os
 
 class Automate:
 
@@ -228,8 +229,75 @@ class Automate:
         for nodeIndex in range(len(self.nodeList)):
             if self.nodeList[nodeIndex].isInit == True and self.nodeList[nodeIndex].isLast == True:
                 newNode.isLast = True
-            if self.nodeList[nodeIndex].isInit == True:
-                for link in self.nodeList[nodeIndex].linkList:
-                    newNode.addLinkToLinkList(link)
-                self.nodeList[nodeIndex].isInit = False
+            for link in self.nodeList[nodeIndex].linkList:
+                newNode.addLinkToLinkList(link)
+            self.nodeList[nodeIndex].isInit = False
+            nodeIndex += 1
         self.nodeList.insert(0, newNode)
+
+    def saveToFile(self, fileName):
+        numberOfInitialStates = 0
+        numberOfFinalStates = 0
+        numberOfInitialAndFinalStates = 0
+        thereIsABin = False
+        for node in self.nodeList:
+            if node.isInit and not node.isLast:
+                numberOfInitialStates += 1
+            elif node.isInit:
+                numberOfInitialAndFinalStates += 1
+            elif node.isLast:
+                numberOfFinalStates += 1
+            if node.bin:
+                thereIsABin = True
+
+        filePath = "./automates/" + fileName + ".txt"
+        if os.path.exists(filePath):
+            return False
+        file = open(filePath, "w")
+        file.write(str(len(self.alphabet)) + '\n')
+        file.write(str(numberOfInitialStates) + '\n')
+        if numberOfInitialStates > 0:
+            for node in self.nodeList:
+                if node.isInit and not node.isLast:
+                    line = node.getName() + ';'
+                    for link in node.linkList:
+                        line += link[0] + '/' + link[1].getName() + ','
+                    line = line.rstrip(',')    
+                    file.write(line + '\n')
+        file.write(str(numberOfFinalStates) + '\n')
+        if numberOfFinalStates > 0:
+            for node in self.nodeList:
+                if node.isLast and not node.isInit:
+                    line = node.getName() + ';'
+                    for link in node.linkList:
+                        line += link[0] + '/' + link[1].getName() + ','
+                    line = line.rstrip(',')    
+                    file.write(line + '\n')
+        file.write(str(numberOfInitialAndFinalStates) + '\n')
+        if numberOfInitialAndFinalStates > 0:
+            for node in self.nodeList:
+                if node.isInit and node.isLast:
+                    line = node.getName() + ';'
+                    for link in node.linkList:
+                        line += link[0] + '/' + link[1].getName() + ','
+                    line = line.rstrip(',')    
+                    file.write(line + '\n')
+        file.write(str(int(thereIsABin)) + '\n')
+        if thereIsABin:
+            for node in self.nodeList:
+                if node.bin:
+                    line = node.getName() + ';'
+                    for link in node.linkList:
+                        line += link[0] + '/' + link[1].getName() + ','
+                    line = line.rstrip(',')
+                    file.write(line + '\n')
+        file.write(str(len(self.nodeList) - numberOfInitialStates - numberOfFinalStates - numberOfInitialAndFinalStates - int(thereIsABin)) + '\n')
+        if(len(self.nodeList) - numberOfInitialStates - numberOfFinalStates - numberOfInitialAndFinalStates - int(thereIsABin) > 0):
+            for node in self.nodeList:
+                if not node.isInit and not node.isLast and not node.bin:
+                    line = node.getName() + ';'
+                    for link in node.linkList:
+                        line += link[0] + '/' + link[1].getName() + ','
+                    line = line.rstrip(',')
+                    file.write(line + '\n')
+        file.close()
