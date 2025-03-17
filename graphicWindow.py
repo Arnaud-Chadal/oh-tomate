@@ -1,7 +1,7 @@
 import pygame
 import graphicNode
 import graphicLink
-from math import pi
+from math import pi, cos, sin
 
 
 class Main:
@@ -18,7 +18,7 @@ class Main:
         self.xMousePos, self.yMousePos = pygame.mouse.get_pos()
         nbr = 0
         for graphNode in nodeList:
-            graphicNo = graphicNode.GraphicNode(nbr * 200, 200, graphNode)
+            graphicNo = graphicNode.GraphicNode(nbr * 200, 50*nbr, graphNode)
             self.nodeList.append(graphicNo)
             self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
             nbr += 1
@@ -32,7 +32,6 @@ class Main:
                         self.nodeList[nbr],
                     )
                 )
-                print(self.linkList[nbr][0].linkVar[1])
             nbr += 1
 
     def run(self):
@@ -61,13 +60,19 @@ class Main:
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     self.clicked = self.grabbed
                     self.grabbed = None
+                    
+            rectArrowDrawed = []
 
+            # print(self.linkList)
             for linkGroup in self.linkList:
                 for links in linkGroup:
-                    links.draw(self.screen)
-
-            self.linkList[0][0].calculateDeltaImage()
-
+                    # print(links.nodeVar.nodeVar.name)
+                    # print("\n")
+                    links.draw(self.screen, rectArrowDrawed)
+                    rectArrowDrawed.append(links.collision)
+            #     print("---")
+            #     print("\n")
+            # print("\n\n\n\n")
             # Affichage des noeuds
             for graphNode in self.nodeList:
                 if self.grabbed == graphNode:
