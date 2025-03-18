@@ -17,6 +17,7 @@ class Main:
         self.graphicNodeToNodeAddress = {}
         self.clicked = None
         self.grabbed = None
+        self.dragLink = None
         self.clock = pygame.time.Clock()
         self.countDownSelectLetter = 0
         self.xMousePos, self.yMousePos = pygame.mouse.get_pos()
@@ -65,6 +66,31 @@ class Main:
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     self.clicked = self.grabbed
                     self.grabbed = None
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+                    for graphNode in self.nodeList:
+                        if graphNode.collision.collidepoint(event.pos):
+                            self.dragLink = graphNode
+                elif event.type == pygame.MOUSEBUTTONUP and event.button == 3:
+                    collideNode = None
+                    for graphNode in self.nodeList:
+                        if graphNode.collision.collidepoint(event.pos):
+                            collideNode = graphNode
+                    if collideNode == None:
+                        pass
+                    else:
+                        groupIndex = None
+                        for groupsNumber in range(len(self.linkList)):
+                            for link in self.linkList[groupsNumber]:
+                                if self.dragLink == link.nodeVar:
+                                    groupIndex = groupsNumber
+                        if groupIndex != None:
+                            self.linkList[groupIndex].append(graphicLink.GraphicLink(['a', collideNode], self.dragLink))
+                            self.dragLink.nodeVar.linkList.append(['a', collideNode.nodeVar])
+                        print(self.linkList[groupIndex])
+                        for link in self.linkList[groupIndex]:
+                            print(link.linkVar)
+                    self.dragLink = None
+                
                     
             rectArrowDrawed = []
             keys = pygame.key.get_pressed()
@@ -88,6 +114,11 @@ class Main:
             
             if self.countDownSelectLetter > 0:
                 self.countDownSelectLetter -= 1
+                
+            if self.dragLink != None:
+                pygame.draw.line(self.screen, (255, 255, 255), (self.dragLink.x+32, self.dragLink.y+32), (
+                        pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                    ), 5)
 
             for linkGroup in self.linkList:
                 for links in linkGroup:
@@ -102,9 +133,9 @@ class Main:
                     if keys[pygame.K_UP] and self.clicked == links and self.countDownSelectLetter == 0:
                         self.countDownSelectLetter = int(self.clock.get_time())
                         lettersAvailable = self.alphabet.copy()
-                        for allNodeLinks in self.graphicNodeToNodeAddress[links.nodeVar].linkList:
-                            if allNodeLinks[0] in lettersAvailable:
-                                lettersAvailable.remove(allNodeLinks[0])
+                        # for allNodeLinks in self.graphicNodeToNodeAddress[links.nodeVar].linkList:
+                        #     if allNodeLinks[0] in lettersAvailable:
+                        #         lettersAvailable.remove(allNodeLinks[0])
                         if lettersAvailable != []:
                             realNode = self.graphicNodeToNodeAddress[links.nodeVar]
                             linkToModifyLetter = links.linkVar.copy()

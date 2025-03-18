@@ -54,8 +54,8 @@ class GraphicLink:
             screen.blit(
                 text_surface,
                 (
-                    self.nodeVar.x + (self.linkVar[1].x - self.nodeVar.x) / 2,
-                    self.nodeVar.y + (self.linkVar[1].y - self.nodeVar.y) / 2,
+                    self.nodeVar.x + (self.collision.x - self.nodeVar.x) / 2,
+                    self.nodeVar.y + (self.collision.y - self.nodeVar.y) / 2,
                 ),
             )
         else:
