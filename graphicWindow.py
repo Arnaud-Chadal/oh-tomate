@@ -1,6 +1,7 @@
 import pygame
 import graphicNode
 import graphicLink
+import node
 from math import pi, cos, sin
 
 
@@ -12,6 +13,7 @@ class Main:
         self.running = True
         self.nodeList = []
         self.linkList = []
+        self.automate = automate
         self.alphabet = automate.alphabet
         self.nodeAddressToGraphicNodeAddress = {}
         self.graphicNodeToNodeAddress = {}
@@ -71,25 +73,46 @@ class Main:
                         if graphNode.collision.collidepoint(event.pos):
                             self.dragLink = graphNode
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 3:
-                    collideNode = None
-                    for graphNode in self.nodeList:
-                        if graphNode.collision.collidepoint(event.pos):
-                            collideNode = graphNode
-                    if collideNode == None:
-                        pass
+                    if self.dragLink == None:
+                        print(self.nodeList)
+                        nextName = "NewNameDefault"
+                        biggestNumber = -1
+                        for n in self.automate.nodeList:
+                            if (biggestNumber < int(n.name)):
+                                biggestNumber = int(n.name)
+                        if biggestNumber != -1:
+                            nextName = str(biggestNumber+1)
+                        newNode = node.Node(nextName, False, False)
+                        self.automate.nodeList.append(newNode)
+                        newGraphicNode = graphicNode.GraphicNode(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], newNode)
+                        self.nodeList.append(newGraphicNode)
+                        self.nodeAddressToGraphicNodeAddress[newNode] = newGraphicNode
+                        self.graphicNodeToNodeAddress[newGraphicNode] = newNode
                     else:
-                        groupIndex = None
-                        for groupsNumber in range(len(self.linkList)):
-                            for link in self.linkList[groupsNumber]:
-                                if self.dragLink == link.nodeVar:
-                                    groupIndex = groupsNumber
-                        if groupIndex != None:
-                            self.linkList[groupIndex].append(graphicLink.GraphicLink(['a', collideNode], self.dragLink))
-                            self.dragLink.nodeVar.linkList.append(['a', collideNode.nodeVar])
-                        print(self.linkList[groupIndex])
-                        for link in self.linkList[groupIndex]:
-                            print(link.linkVar)
-                    self.dragLink = None
+                        collideNode = None
+                        for graphNode in self.nodeList:
+                            if graphNode.collision.collidepoint(event.pos):
+                                collideNode = graphNode
+                        if collideNode != None:
+                            groupIndex = None
+                            for groupsNumber in range(len(self.linkList)):
+                                for link in self.linkList[groupsNumber]:
+                                    if self.dragLink == link.nodeVar:
+                                        groupIndex = groupsNumber
+                            if groupIndex != None:
+                                self.linkList[groupIndex].append(graphicLink.GraphicLink(['a', collideNode], self.dragLink))
+                                self.dragLink.nodeVar.linkList.append(['a', collideNode.nodeVar])
+                                print(self.linkList[groupIndex])
+                                for link in self.linkList[groupIndex]:
+                                    print(link.linkVar)
+                            elif groupIndex == None:
+                                self.linkList.append([])
+                                self.linkList[-1].append(graphicLink.GraphicLink(['a', collideNode], self.dragLink))
+                                self.dragLink.nodeVar.linkList.append(['a', collideNode.nodeVar])
+                                print(self.linkList[-1])
+                                for link in self.linkList[-1]:
+                                    print(link.linkVar)
+                        self.dragLink = None
                 
                     
             rectArrowDrawed = []
