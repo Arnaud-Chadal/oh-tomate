@@ -69,6 +69,23 @@ class Main:
             rectArrowDrawed = []
             keys = pygame.key.get_pressed()
             
+            if keys[pygame.K_RIGHT] and self.clicked == None:
+                for graphNode in self.nodeList:
+                    graphNode.x += 10
+                    graphNode.collision.x += 10
+            if keys[pygame.K_LEFT] and self.clicked == None:
+                for graphNode in self.nodeList:
+                    graphNode.x -= 10
+                    graphNode.collision.x -= 10
+            if keys[pygame.K_DOWN] and self.clicked == None:
+                for graphNode in self.nodeList:
+                    graphNode.y += 10
+                    graphNode.collision.y += 10
+            if keys[pygame.K_UP] and self.clicked == None:
+                for graphNode in self.nodeList:
+                    graphNode.y -= 10
+                    graphNode.collision.y -= 10
+            
             if self.countDownSelectLetter > 0:
                 self.countDownSelectLetter -= 1
 
