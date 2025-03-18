@@ -61,7 +61,7 @@ class Main:
                                 link.collision.collidepoint(event.pos)
                                 and self.grabbed == None
                             ):
-                                counterSelectLetter = 0
+                                counterSelectLetter = self.alphabet.index(link.linkVar[0])
                                 link.isClicked = True
                                 self.clicked = link
                                 self.grabbed = link
@@ -160,12 +160,27 @@ class Main:
                         #     if allNodeLinks[0] in lettersAvailable:
                         #         lettersAvailable.remove(allNodeLinks[0])
                         if lettersAvailable != []:
+                            counterSelectLetter += 1
                             realNode = self.graphicNodeToNodeAddress[links.nodeVar]
                             linkToModifyLetter = links.linkVar.copy()
                             linkToModifyLetter[1] = self.graphicNodeToNodeAddress[linkToModifyLetter[1]]
                             realNode.linkList[realNode.linkList.index(linkToModifyLetter)][0] = lettersAvailable[counterSelectLetter%len(lettersAvailable)]
                             links.linkVar[0] = lettersAvailable[counterSelectLetter%len(lettersAvailable)]
-                            counterSelectLetter += 1
+                        else:
+                            print("All letters already used !")
+                    if keys[pygame.K_DOWN] and self.clicked == links and self.countDownSelectLetter == 0:
+                        self.countDownSelectLetter = int(self.clock.get_time())
+                        lettersAvailable = self.alphabet.copy()
+                        # for allNodeLinks in self.graphicNodeToNodeAddress[links.nodeVar].linkList:
+                        #     if allNodeLinks[0] in lettersAvailable:
+                        #         lettersAvailable.remove(allNodeLinks[0])
+                        if lettersAvailable != []:
+                            counterSelectLetter -= 1
+                            realNode = self.graphicNodeToNodeAddress[links.nodeVar]
+                            linkToModifyLetter = links.linkVar.copy()
+                            linkToModifyLetter[1] = self.graphicNodeToNodeAddress[linkToModifyLetter[1]]
+                            realNode.linkList[realNode.linkList.index(linkToModifyLetter)][0] = lettersAvailable[counterSelectLetter%len(lettersAvailable)]
+                            links.linkVar[0] = lettersAvailable[counterSelectLetter%len(lettersAvailable)]
                         else:
                             print("All letters already used !")
 
