@@ -74,4 +74,4 @@ for group in allautos:
 firstauto = automate.Automate(alphabet, nodeTab)
 print(firstauto)
 
-graphicWindow.Main(firstauto.nodeList).run()
+graphicWindow.Main(firstauto).run()
