@@ -73,10 +73,10 @@ class Main:
     def drawTransitionMenu(self):
         my_font = pygame.font.SysFont("Comic Sans MS", 15)
         barMenuRect = pygame.rect.Rect(
-            self.transitionMenuX - 5, self.transitionMenuY + 20, 10, 500
+            self.transitionMenuX - 5, self.transitionMenuY + 20, 10, 700
         )
         menuRect = pygame.rect.Rect(
-            self.transitionMenuX, self.transitionMenuY + 20, 650, 500
+            self.transitionMenuX, self.transitionMenuY + 20, 650, 700
         )
         if barMenuRect.collidepoint(
             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
