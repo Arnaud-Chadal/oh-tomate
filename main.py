@@ -1,7 +1,7 @@
 import node
 import automate
 
-file = open("./automates/automateTest34.txt", "r")
+file = open("./automates/automateTest41.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
 fileLines=[]
 isAsynchronous=False
@@ -62,6 +62,7 @@ for groupNumber in range(len(allautos)):
                     isAlreadyHere = True
                     n.setBin(True)
             if isAlreadyHere == False:
+                newNode.bin = True
                 nodeTab.append(newNode)
         if groupNumber == 4:
             nodeTab.append(newNode)
@@ -86,7 +87,7 @@ if deterministe:
     print("automate déterministe")
 else:
     print("automate non déterministe")
-print("juste en dessous")
+
 firstauto.toDetermine()
 print(firstauto)
 deterministe=firstauto.isDetermined()

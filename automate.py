@@ -156,20 +156,18 @@ class Automate:
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
         self.isAsynchronous=0
         
-        print(self)
 
 
     def toDetermine(self):
         if self.isAsynchronous:
             self.removeEpsilonMove()
-        print("démarrage")
-        for toto in self.nodeList:
-            print(toto.linkList)
-        print("---")
+        
+        
         shouldWeContinue=0
         alphabetLen=len(self.alphabet)
         oldInit=[]
         newIsLast=0
+        newIsBin=0
         transitions=[]
         newTransitions=[]
         transitionPlaceToInsert=0
@@ -178,7 +176,6 @@ class Automate:
         newNodes=[]
         newNodePlace=0
         for nodeObj in self.nodeList:
-            print(nodeObj.name)
             if nodeObj.isInit:
                 oldInit.append(nodeObj)
                 if (not(newIsLast) and nodeObj.isLast):
@@ -212,13 +209,12 @@ class Automate:
                 for nodeObj in nodeList:
                     if (not newIsLast) and nodeObj.isLast:
                         newIsLast=1
-                    
+                    if (not newIsBin) and nodeObj.bin:
+                        newIsBin=1
                     if nodeObj.name not in newName:
                         newName.add(str(nodeObj.name))
                         
                         for link in nodeObj.linkList: 
-                            #print(transitions[transitionPlaceToInsert-1])
-                            #print(link[0],ord(link[0])-97) 
                             transitions[transitionPlaceToInsert-1][ord(link[0])-97].append(link[1])
                             newTransitions[transitionPlaceToInsert-1][ord(link[0])-97].add(link[1].name)
                            
@@ -226,6 +222,9 @@ class Automate:
                         shouldWeContinue=1
                         newNames.append(newName)
                         newNode=node.Node(str(newNodePlace),0,newIsLast)
+                        if newIsBin:
+                            newNode.bin=True
+                            newNode.name='P'
                         newNodePlace+=1
                         newNodes.append(newNode)
                 else:
