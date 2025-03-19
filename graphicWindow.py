@@ -14,17 +14,40 @@ class Main:
         self.image = pygame.image.load("./images/verySeriousImage.jpg").convert_alpha()
         self.image = pygame.transform.scale(self.image, (756, 1008))
         self.running = True
-        self.nodeList = []
-        self.linkList = []
         self.automate = automate
         self.alphabet = automate.alphabet
         self.nodeAddressToGraphicNodeAddress = {}
         self.graphicNodeToNodeAddress = {}
+        self.nodeList = []
+        self.linkList = []
         self.clicked = None
         self.grabbed = None
         self.dragLink = None
         self.menuX = 0
         self.menuY = 1080
+        self.transitionMenuX = 1920
+        self.transitionMenuY = 0
+        self.determineButton = button.Button(
+            self.menuX + 70, self.menuY + 100 - 30, 200, 80
+        )
+        self.minimButton = button.Button(
+            self.menuX + 320, self.menuY + 100 - 30, 200, 80
+        )
+        self.standaButton = button.Button(
+            self.menuX + 570, self.menuY + 100 - 30, 200, 80
+        )
+        self.completeButton = button.Button(
+            self.menuX + 820, self.menuY + 100 - 30, 200, 80
+        )
+        self.complementButton = button.Button(
+            self.menuX + 1070, self.menuY + 100 - 30, 200, 80
+        )
+        self.importButton = button.Button(
+            self.menuX + 1375, self.menuY + 100 - 30, 200, 80
+        )
+        self.exportButton = button.Button(
+            self.menuX + 1625, self.menuY + 100 - 30, 200, 80
+        )
         self.clock = pygame.time.Clock()
         self.countDownSelectLetter = 0
         self.xMousePos, self.yMousePos = pygame.mouse.get_pos()
@@ -46,6 +69,43 @@ class Main:
                     )
                 )
             nbr += 1
+
+    def drawTransitionMenu(self):
+        my_font = pygame.font.SysFont("Comic Sans MS", 15)
+        barMenuRect = pygame.rect.Rect(
+            self.transitionMenuX - 5, self.transitionMenuY + 20, 10, 300
+        )
+        menuRect = pygame.rect.Rect(
+            self.transitionMenuX, self.transitionMenuY + 20, 400, 300
+        )
+        if barMenuRect.collidepoint(
+            pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+        ) or menuRect.collidepoint(
+            pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+        ):
+            if self.transitionMenuX > 1620:
+                self.transitionMenuX -= 30
+        else:
+            if self.transitionMenuX < 1920:
+                self.transitionMenuX += 30
+        pygame.draw.rect(self.screen, (0, 0, 0), menuRect)
+        pygame.draw.rect(self.screen, (0, 0, 255), barMenuRect)
+        # self.screen.blit(
+        #     self.my_font.render("Menu", False, (255, 255, 255)),
+        #     (self.menuX + 30, self.menuY + 30),
+        # )
+        string = self.automate.printTransitionTables()
+        string = string.replace("\t", "").split("\n")
+
+        for lineNumber in range(len(string)):
+            textToRender = my_font.render(string[lineNumber], 0, (255, 255, 255))
+            self.screen.blit(
+                textToRender,
+                (
+                    self.transitionMenuX + 10,
+                    self.transitionMenuY + 20 + lineNumber * 30,
+                ),
+            )
 
     def drawMenu(self):
         barMenuRect = pygame.rect.Rect(self.menuX, self.menuY - 10, 1920, 10)
@@ -71,26 +131,37 @@ class Main:
         #     self.my_font.render("Menu", False, (255, 255, 255)),
         #     (self.menuX + 30, self.menuY + 30),
         # )
-
-        determineButton = button.Button(self.menuX + 70, self.menuY + 100 - 30, 200, 80)
-        determineButton.drawButton(self.screen, "Determinize")
-        minimButton = button.Button(self.menuX + 320, self.menuY + 100 - 30, 200, 80)
-        minimButton.drawButton(self.screen, "Minimize")
-        standaButton = button.Button(self.menuX + 570, self.menuY + 100 - 30, 200, 80)
-        standaButton.drawButton(self.screen, "Standardize")
-        completeButton = button.Button(self.menuX + 820, self.menuY + 100 - 30, 200, 80)
-        completeButton.drawButton(self.screen, "Complete")
-        complementButton = button.Button(
+        self.determineButton = button.Button(
+            self.menuX + 70, self.menuY + 100 - 30, 200, 80
+        )
+        self.minimButton = button.Button(
+            self.menuX + 320, self.menuY + 100 - 30, 200, 80
+        )
+        self.standaButton = button.Button(
+            self.menuX + 570, self.menuY + 100 - 30, 200, 80
+        )
+        self.completeButton = button.Button(
+            self.menuX + 820, self.menuY + 100 - 30, 200, 80
+        )
+        self.complementButton = button.Button(
             self.menuX + 1070, self.menuY + 100 - 30, 200, 80
         )
-        complementButton.drawButton(self.screen, "Complement")
+        self.importButton = button.Button(
+            self.menuX + 1375, self.menuY + 100 - 30, 200, 80
+        )
+        self.exportButton = button.Button(
+            self.menuX + 1625, self.menuY + 100 - 30, 200, 80
+        )
+        self.standaButton.drawButton(self.screen, "Standardize")
+        self.determineButton.drawButton(self.screen, "Determinize")
+        self.completeButton.drawButton(self.screen, "Complete")
+        self.minimButton.drawButton(self.screen, "Minimize")
+        self.complementButton.drawButton(self.screen, "Complement")
         pygame.draw.rect(
             self.screen, (160, 160, 160), (self.menuX + 1320, self.menuY + 10, 5, 180)
         )
-        importButton = button.Button(self.menuX + 1375, self.menuY + 100 - 30, 200, 80)
-        importButton.drawButton(self.screen, "Import")
-        exportButton = button.Button(self.menuX + 1625, self.menuY + 100 - 30, 200, 80)
-        exportButton.drawButton(self.screen, "Export")
+        self.importButton.drawButton(self.screen, "Import")
+        self.exportButton.drawButton(self.screen, "Export")
 
     def run(self):
         while self.running:
@@ -117,6 +188,172 @@ class Main:
                                 link.isClicked = True
                                 self.clicked = link
                                 self.grabbed = link
+                    if self.determineButton.rect.collidepoint(
+                        pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                    ):
+                        self.automate.toDetermine()
+                        self.nodeAddressToGraphicNodeAddress = {}
+                        self.graphicNodeToNodeAddress = {}
+                        self.nodeList = []
+                        self.linkList = []
+                        nbr = 0
+                        for graphNode in self.automate.nodeList:
+                            graphicNo = graphicNode.GraphicNode(
+                                nbr * 200, 50 * nbr, graphNode
+                            )
+                            self.nodeList.append(graphicNo)
+                            self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
+                            self.graphicNodeToNodeAddress[graphicNo] = graphNode
+                            nbr += 1
+                        nbr = 0
+                        for graphNode in self.automate.nodeList:
+                            self.linkList.append([])
+                            for link in graphNode.linkList:
+                                self.linkList[nbr].append(
+                                    graphicLink.GraphicLink(
+                                        [
+                                            link[0],
+                                            self.nodeAddressToGraphicNodeAddress[
+                                                link[1]
+                                            ],
+                                        ],
+                                        self.nodeList[nbr],
+                                    )
+                                )
+                            nbr += 1
+                    elif self.minimButton.rect.collidepoint(
+                        pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                    ):
+                        self.automate.toMinimize()
+                        self.nodeAddressToGraphicNodeAddress = {}
+                        self.graphicNodeToNodeAddress = {}
+                        self.nodeList = []
+                        self.linkList = []
+                        nbr = 0
+                        for graphNode in self.automate.nodeList:
+                            graphicNo = graphicNode.GraphicNode(
+                                nbr * 200, 50 * nbr, graphNode
+                            )
+                            self.nodeList.append(graphicNo)
+                            self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
+                            self.graphicNodeToNodeAddress[graphicNo] = graphNode
+                            nbr += 1
+                        nbr = 0
+                        for graphNode in self.automate.nodeList:
+                            self.linkList.append([])
+                            for link in graphNode.linkList:
+                                self.linkList[nbr].append(
+                                    graphicLink.GraphicLink(
+                                        [
+                                            link[0],
+                                            self.nodeAddressToGraphicNodeAddress[
+                                                link[1]
+                                            ],
+                                        ],
+                                        self.nodeList[nbr],
+                                    )
+                                )
+                            nbr += 1
+                        self.automate.printTransitionTables()
+                    elif self.standaButton.rect.collidepoint(
+                        pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                    ):
+                        self.automate.toStandardize()
+                        self.nodeAddressToGraphicNodeAddress = {}
+                        self.graphicNodeToNodeAddress = {}
+                        self.nodeList = []
+                        self.linkList = []
+                        nbr = 0
+                        for graphNode in self.automate.nodeList:
+                            graphicNo = graphicNode.GraphicNode(
+                                nbr * 200, 50 * nbr, graphNode
+                            )
+                            self.nodeList.append(graphicNo)
+                            self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
+                            self.graphicNodeToNodeAddress[graphicNo] = graphNode
+                            nbr += 1
+                        nbr = 0
+                        for graphNode in self.automate.nodeList:
+                            self.linkList.append([])
+                            for link in graphNode.linkList:
+                                self.linkList[nbr].append(
+                                    graphicLink.GraphicLink(
+                                        [
+                                            link[0],
+                                            self.nodeAddressToGraphicNodeAddress[
+                                                link[1]
+                                            ],
+                                        ],
+                                        self.nodeList[nbr],
+                                    )
+                                )
+                            nbr += 1
+                    elif self.completeButton.rect.collidepoint(
+                        pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                    ):
+                        self.automate.toComplete()
+                        self.nodeAddressToGraphicNodeAddress = {}
+                        self.graphicNodeToNodeAddress = {}
+                        self.nodeList = []
+                        self.linkList = []
+                        nbr = 0
+                        for graphNode in self.automate.nodeList:
+                            graphicNo = graphicNode.GraphicNode(
+                                nbr * 200, 50 * nbr, graphNode
+                            )
+                            self.nodeList.append(graphicNo)
+                            self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
+                            self.graphicNodeToNodeAddress[graphicNo] = graphNode
+                            nbr += 1
+                        nbr = 0
+                        for graphNode in self.automate.nodeList:
+                            self.linkList.append([])
+                            for link in graphNode.linkList:
+                                self.linkList[nbr].append(
+                                    graphicLink.GraphicLink(
+                                        [
+                                            link[0],
+                                            self.nodeAddressToGraphicNodeAddress[
+                                                link[1]
+                                            ],
+                                        ],
+                                        self.nodeList[nbr],
+                                    )
+                                )
+                            nbr += 1
+                    elif self.complementButton.rect.collidepoint(
+                        pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                    ):
+                        self.automate.toComplement()
+                        self.nodeAddressToGraphicNodeAddress = {}
+                        self.graphicNodeToNodeAddress = {}
+                        self.nodeList = []
+                        self.linkList = []
+                        nbr = 0
+                        for graphNode in self.automate.nodeList:
+                            graphicNo = graphicNode.GraphicNode(
+                                nbr * 200, 50 * nbr, graphNode
+                            )
+                            self.nodeList.append(graphicNo)
+                            self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
+                            self.graphicNodeToNodeAddress[graphicNo] = graphNode
+                            nbr += 1
+                        nbr = 0
+                        for graphNode in self.automate.nodeList:
+                            self.linkList.append([])
+                            for link in graphNode.linkList:
+                                self.linkList[nbr].append(
+                                    graphicLink.GraphicLink(
+                                        [
+                                            link[0],
+                                            self.nodeAddressToGraphicNodeAddress[
+                                                link[1]
+                                            ],
+                                        ],
+                                        self.nodeList[nbr],
+                                    )
+                                )
+                            nbr += 1
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     self.clicked = self.grabbed
                     self.grabbed = None
@@ -295,5 +532,6 @@ class Main:
                 self.screen.blit(text_surface, (graphNode.x + 15, graphNode.y + 15))
 
             self.drawMenu()
+            self.drawTransitionMenu()
             pygame.display.flip()
             self.clock.tick(60)
