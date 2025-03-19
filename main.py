@@ -1,5 +1,6 @@
 import node
 import automate
+import graphicWindow
 
 file = open("./automates/automateTest28.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -72,6 +73,7 @@ for group in allautos:
 
 firstauto = automate.Automate(alphabet, nodeTab)
 print(firstauto)
+graphicWindow.Main(firstauto).run()
 print("\n=======================\n")
 # print(firstauto.isStantard())
 # firstauto.toStandardize()
