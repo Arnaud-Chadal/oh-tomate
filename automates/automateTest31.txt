@@ -1,0 +1,14 @@
+2
+1
+0;epsilon/1,epsilon/4
+1
+7
+0
+0
+6
+1;a/2,epsilon/3
+2;a/3,b/1
+3;b/3,epsilon/7
+4;b/5
+5;b/6
+6;epsilon/4,epsilon/7

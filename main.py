@@ -2,7 +2,7 @@ import node
 import automate
 import graphicWindow
 
-file = open("./automates/temoin.txt", "r")
+file = open("./automates/automateTest28.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
 
 fileLines = [line.rstrip() for line in file]
@@ -73,5 +73,35 @@ for group in allautos:
 
 firstauto = automate.Automate(alphabet, nodeTab)
 print(firstauto)
-
 graphicWindow.Main(firstauto).run()
+print("\n=======================\n")
+# print(firstauto.isStantard())
+# firstauto.toStandardize()
+# print(firstauto)
+# print("\n=======================\n")
+deterministe=firstauto.isDetermined()
+if deterministe:
+    print("automate déterministe")
+else:
+    print("automate non déterministe")
+
+firstauto.toDetermine()
+
+deterministe=firstauto.isDetermined()
+if deterministe:
+    print("automate déterministe")
+else:
+    print("automate non déterministe")
+print(firstauto)
+
+# print("\n=======================\n")
+# firstauto.toComplete()
+
+# print(firstauto)
+# print("\n=======================\n")
+
+firstauto.toMinimize()
+print(firstauto)
+
+print(firstauto.recognize("abababbbbb"))
+print(firstauto.printTransitionTables())
