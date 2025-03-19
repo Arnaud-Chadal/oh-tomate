@@ -73,17 +73,17 @@ class Main:
     def drawTransitionMenu(self):
         my_font = pygame.font.SysFont("Comic Sans MS", 15)
         barMenuRect = pygame.rect.Rect(
-            self.transitionMenuX - 5, self.transitionMenuY + 20, 10, 300
+            self.transitionMenuX - 5, self.transitionMenuY + 20, 10, 500
         )
         menuRect = pygame.rect.Rect(
-            self.transitionMenuX, self.transitionMenuY + 20, 400, 300
+            self.transitionMenuX, self.transitionMenuY + 20, 650, 500
         )
         if barMenuRect.collidepoint(
             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
         ) or menuRect.collidepoint(
             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
         ):
-            if self.transitionMenuX > 1620:
+            if self.transitionMenuX > 1320:
                 self.transitionMenuX -= 30
         else:
             if self.transitionMenuX < 1920:
@@ -95,17 +95,16 @@ class Main:
         #     (self.menuX + 30, self.menuY + 30),
         # )
         string = self.automate.printTransitionTables()
-        string = string.replace("\t", "").split("\n")
-
-        for lineNumber in range(len(string)):
-            textToRender = my_font.render(string[lineNumber], 0, (255, 255, 255))
-            self.screen.blit(
-                textToRender,
-                (
-                    self.transitionMenuX + 10,
-                    self.transitionMenuY + 20 + lineNumber * 30,
-                ),
-            )
+        for groupsNumber in range(len(string)):
+            for lineNumber in range(len(string[groupsNumber])):
+                textToRender = my_font.render(string[groupsNumber][lineNumber], 0, (255, 255, 255))
+                self.screen.blit(
+                    textToRender,
+                    (
+                        self.transitionMenuX + 30,
+                        self.transitionMenuY + 20 + lineNumber * 30 + sum([len(group) for group in string[:groupsNumber]]) * 30,
+                    ),
+                )
 
     def drawMenu(self):
         barMenuRect = pygame.rect.Rect(self.menuX, self.menuY - 10, 1920, 10)
@@ -363,7 +362,6 @@ class Main:
                             self.dragLink = graphNode
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 3:
                     if self.dragLink == None:
-                        print(self.nodeList)
                         nextName = "NewNameDefault"
                         biggestNumber = -1
                         for n in self.automate.nodeList:
@@ -401,7 +399,6 @@ class Main:
                                 self.dragLink.nodeVar.linkList.append(
                                     ["a", collideNode.nodeVar]
                                 )
-                                print(self.linkList[groupIndex])
                                 for link in self.linkList[groupIndex]:
                                     print(link.linkVar)
                             elif groupIndex == None:

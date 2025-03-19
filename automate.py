@@ -405,21 +405,30 @@ class Automate:
         return False
 
     def printTransitionTables(self):
-
+        stringTabReturn = [[], [], [], []]
         string = "========= Initial Nodes =========\t"
+        stringTabReturn[0].append("========= Initial Nodes =========")
         if self.backupNodeList[1] != []:
             string += (
                 "========= [Previous array Nodes] -> New Determined node =========\t"
             )
+            
+            stringTabReturn[1].append((
+                "========= [Previous array Nodes] -> New Determined node ========="
+            ))
         if self.backupNodeList[2] != []:
             string += "========= [Previous Array Nodes] -> Complete node =========\t"
+            stringTabReturn[2].append((
+                "========= [Previous Array Nodes] -> Complete node ========="
+            ))
         if self.backupNodeList[3] != []:
             string += (
                 "========= [Previous Array Nodes] -> New Minimized node =========\t"
             )
+            stringTabReturn[3].append((
+                "========= [Previous Array Nodes] -> New Minimized node ========="
+            ))
         string += "\n"
-
-        print(self.backupNodeList)
 
         lenInitial = len(self.backupNodeList[0])
         lenDetermined = len(self.backupNodeList[1])
@@ -429,10 +438,12 @@ class Automate:
         for nIndex in range(max(lenInitial, lenDetermined, lenMinimized, lenComplete)):
             if nIndex < lenInitial:
                 string += f"{self.backupNodeList[0][nIndex].getName()}\t".center(35)
+                stringTabReturn[0].append(f"{self.backupNodeList[0][nIndex].getName()}".center(35))
             else:
                 string += " \t".center(35)
             if nIndex < lenDetermined:
                 string += f"{self.backupNodeList[1][nIndex]} -> {nIndex}\t".center(58)
+                stringTabReturn[1].append(f"{self.backupNodeList[1][nIndex]} -> {nIndex}".center(58))
             elif lenDetermined != 0:
                 string += "\t\t\t".center(58)
             if lenDetermined == 0:
@@ -441,8 +452,10 @@ class Automate:
                         string += (
                             f"{self.backupNodeList[2][nIndex].getName()}\t".center(58)
                         )
+                        stringTabReturn[2].append(f"{self.backupNodeList[2][nIndex].getName()}".center(58))
                     else:
                         string += f"{self.backupNodeList[2][nIndex]}\t".center(58)
+                        stringTabReturn[2].append(f"{self.backupNodeList[2][nIndex]}".center(58))
                 elif lenComplete != 0:
                     string += "\t\t\t".center(58)
             else:
@@ -451,15 +464,16 @@ class Automate:
                         string += (
                             f"{self.backupNodeList[2][nIndex]} -> {nIndex}\t".center(58)
                         )
+                        stringTabReturn[2].append(f"{self.backupNodeList[2][nIndex]} -> {nIndex}".center(58))
                     else:
                         string += f"{self.backupNodeList[2][nIndex]}\t".center(58)
+                        stringTabReturn[2].append(f"{self.backupNodeList[2][nIndex]}".center(58))
                 elif lenComplete != 0:
                     string += "\t\t\t".center(58)
             if nIndex < lenMinimized:
                 string += f"{self.backupNodeList[3][nIndex]} -> {self.nodeList[nIndex].getName()}\t".center(
                     63
                 )
+                stringTabReturn[3].append(f"{self.backupNodeList[3][nIndex]} -> {self.nodeList[nIndex].getName()}".center(63))
             string += "\n"
-
-        print(string)
-        return string
+        return stringTabReturn
