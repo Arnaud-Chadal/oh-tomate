@@ -1,10 +1,14 @@
 import node
 import automate
 
-file = open("./automates/automateTest28.txt", "r")
+file = open("./automates/automateTest34.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
-
-fileLines = [line.rstrip() for line in file]
+fileLines=[]
+isAsynchronous=False
+for line in file:
+    fileLines.append(line.rstrip())
+    if (not isAsynchronous) and '&' in line:
+        isAsynchronous=True 
 
 alphabet = [fullAlphabet[i] for i in range(int(fileLines[0]))]
 allautos = [[], [], [], [], []]
@@ -70,7 +74,7 @@ for group in allautos:
         for link in auto[1]:
             currentNode.addLinkToLinkList([link[0], automateNameToObject[link[1]]])
 
-firstauto = automate.Automate(alphabet, nodeTab)
+firstauto = automate.Automate(alphabet, nodeTab, isAsynchronous)
 print(firstauto)
 print("\n=======================\n")
 # print(firstauto.isStantard())
@@ -82,24 +86,25 @@ if deterministe:
     print("automate déterministe")
 else:
     print("automate non déterministe")
-
+print("juste en dessous")
 firstauto.toDetermine()
-
+print(firstauto)
 deterministe=firstauto.isDetermined()
 if deterministe:
     print("automate déterministe")
 else:
     print("automate non déterministe")
-print(firstauto)
+
 
 # print("\n=======================\n")
 # firstauto.toComplete()
 
 # print(firstauto)
 # print("\n=======================\n")
-
+"""
 firstauto.toMinimize()
 print(firstauto)
 
 print(firstauto.recognize("abababbbbb"))
 print(firstauto.printTransitionTables())
+"""

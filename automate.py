@@ -7,12 +7,15 @@ class Automate:
         self,
         alphabet,
         nodeList,
+        isAsynchronous,
     ):
         self.alphabet = alphabet
         self.nodeList = nodeList
         self.backupNodeList = [nodeList.copy(), [], [], []]
         self.nodeInitList = []
         self.nodeLastList = []
+        self.isAsynchronous=isAsynchronous
+        
         for node in self.nodeList:
             if (node.isInit):
                 self.nodeInitList.append(node)
@@ -44,6 +47,8 @@ class Automate:
         return True
 
     def isDetermined(self):
+        if (self.isAsynchronous):
+            return 0
         numberOfInitStates=0
         alphabetLen=len(self.alphabet)
         for node in self.nodeList:
@@ -56,6 +61,8 @@ class Automate:
             if numberOfTransitions>alphabetLen:
                 return 0
             for link in node.linkList:
+                if (link[0]=='&'):
+                    return 0
                 insertionPlace=ord(link[0])-97
                 transition[insertionPlace]+=1
                 if transition[insertionPlace]>1:
@@ -68,8 +75,97 @@ class Automate:
 
     # Méthodes d'action :
 
-    def toDetermine(self):
 
+    def removeEpsilonMove(self):
+        closureToProcess=set()
+        linkFromClosureToProcess=[]
+        newNames={}
+
+        newLink=[]
+        newIsLast=0
+        newIsInit=0
+        newNodePlace=0
+        newNodes=[]
+        for nodeObj in self.nodeList:
+            if (nodeObj.isInit):
+                closureToProcess.add(nodeObj)
+                continue
+            for link in nodeObj.linkList:
+                if link[0] in self.alphabet:
+                    closureToProcess.add(link[1])
+        for ele in closureToProcess:
+            newIsLast=0
+            newIsInit=0
+            newLink=[]
+            newName=set()
+            newName.add(ele.name)
+            if ele.isLast:
+                newIsLast=1
+            if ele.isInit:
+                newIsInit=1
+            for link in ele.linkList:
+                if link[0]=="&" and (link[1].name not in newName):
+                    if link[1].isInit:
+                        newIsInit=1
+                    if link[1].isLast:
+                        newIsLast=1 
+                    newName.add(link[1].name)
+                    linkFromClosureToProcess.append(link[1])
+                if link[0] in self.alphabet:
+                    if link[1].isInit:
+                        newIsInit=1
+                    if link[1].isLast:
+                        newIsLast=1 
+                    newLink.append([link[0],link[1]]) 
+            while linkFromClosureToProcess:
+                
+                for linkToProcess in linkFromClosureToProcess[0].linkList:
+                    #print('ici:',linkToProcess[1].name)
+                    #print(linkToProcess[0])
+                    if (not newIsInit) and (linkToProcess[1].isInit):
+                        newIsInit=1
+                    if (not newIsLast) and (linkToProcess[1].isLast):
+                        newIsLast=1
+                    if linkToProcess[0]=="&" and (linkToProcess[1].name not in newName):
+                        #print("ici &")
+                        newName.add(linkToProcess[1].name)
+                        linkFromClosureToProcess.append(linkToProcess[1])
+                    if linkToProcess[0] in self.alphabet:
+                        #print("ici alpha")
+                        newLink.append([linkToProcess[0],linkToProcess[1]])
+                del linkFromClosureToProcess[0]
+            newNames[ele.name]=newName
+            
+            newNode=node.Node(str(ele.name),newIsInit,newIsLast)
+            newNode.linkList=newLink
+            newNodePlace+=1
+            newNodes.append(newNode)
+        newNamesIdxMap = {key: i for i, key in enumerate(newNames)}
+        
+        for myNewNode in newNodes:
+            for link in myNewNode.linkList:
+                link[1]=newNodes[newNamesIdxMap.get(link[1].name)]
+        self.nodeList=newNodes.copy()
+        self.nodeInitList = []
+        self.nodeLastList = []
+        for n in self.nodeList:
+            if (n.isInit):
+                self.nodeInitList.append(n)
+            if (n.isLast):
+                self.nodeLastList.append(n)
+        self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
+        self.isAsynchronous=0
+        
+        print(self)
+
+
+    def toDetermine(self):
+        if self.isAsynchronous:
+            self.removeEpsilonMove()
+        print("démarrage")
+        for toto in self.nodeList:
+            print(toto.linkList)
+        print("---")
         shouldWeContinue=0
         alphabetLen=len(self.alphabet)
         oldInit=[]
@@ -82,6 +178,7 @@ class Automate:
         newNodes=[]
         newNodePlace=0
         for nodeObj in self.nodeList:
+            print(nodeObj.name)
             if nodeObj.isInit:
                 oldInit.append(nodeObj)
                 if (not(newIsLast) and nodeObj.isLast):
@@ -96,6 +193,7 @@ class Automate:
         for initState in oldInit:
             newName.add(str(initState.name))
             for link in initState.linkList:
+                
                 transitions[transitionPlaceToInsert-1][ord(link[0])-97].append(link[1])
                 newTransitions[transitionPlaceToInsert-1][ord(link[0])-97].add(link[1].name)
                 shouldWeContinue=1
@@ -118,7 +216,9 @@ class Automate:
                     if nodeObj.name not in newName:
                         newName.add(str(nodeObj.name))
                         
-                        for link in nodeObj.linkList:  
+                        for link in nodeObj.linkList: 
+                            #print(transitions[transitionPlaceToInsert-1])
+                            #print(link[0],ord(link[0])-97) 
                             transitions[transitionPlaceToInsert-1][ord(link[0])-97].append(link[1])
                             newTransitions[transitionPlaceToInsert-1][ord(link[0])-97].add(link[1].name)
                            
