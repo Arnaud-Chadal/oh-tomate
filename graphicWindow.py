@@ -50,6 +50,7 @@ class Main:
         )
         self.clock = pygame.time.Clock()
         self.countDownSelectLetter = 0
+        self.countDownSelectState = 0
         self.xMousePos, self.yMousePos = pygame.mouse.get_pos()
         nbr = 0
         for graphNode in automate.nodeList:
@@ -130,16 +131,16 @@ class Main:
         #     self.my_font.render("Menu", False, (255, 255, 255)),
         #     (self.menuX + 30, self.menuY + 30),
         # )
-        self.determineButton = button.Button(
+        self.standaButton = button.Button(
             self.menuX + 70, self.menuY + 100 - 30, 200, 80
         )
-        self.minimButton = button.Button(
+        self.determineButton = button.Button(
             self.menuX + 320, self.menuY + 100 - 30, 200, 80
         )
-        self.standaButton = button.Button(
+        self.completeButton = button.Button(
             self.menuX + 570, self.menuY + 100 - 30, 200, 80
         )
-        self.completeButton = button.Button(
+        self.minimButton = button.Button(
             self.menuX + 820, self.menuY + 100 - 30, 200, 80
         )
         self.complementButton = button.Button(
@@ -353,6 +354,10 @@ class Main:
                                     )
                                 )
                             nbr += 1
+                if self.exportButton.rect.collidepoint(
+                        pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                    ):
+                        self.automate.saveToFile("test16")
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     self.clicked = self.grabbed
                     self.grabbed = None
@@ -362,7 +367,7 @@ class Main:
                             self.dragLink = graphNode
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 3:
                     if self.dragLink == None:
-                        nextName = "NewNameDefault"
+                        nextName = "0"
                         biggestNumber = -1
                         for n in self.automate.nodeList:
                             if biggestNumber < int(n.name):
@@ -379,6 +384,7 @@ class Main:
                         self.nodeList.append(newGraphicNode)
                         self.nodeAddressToGraphicNodeAddress[newNode] = newGraphicNode
                         self.graphicNodeToNodeAddress[newGraphicNode] = newNode
+                        print(self.automate)
                     else:
                         collideNode = None
                         for graphNode in self.nodeList:
@@ -438,6 +444,8 @@ class Main:
 
             if self.countDownSelectLetter > 0:
                 self.countDownSelectLetter -= 1
+            if self.countDownSelectState > 0:
+                self.countDownSelectState -= 1
 
             if self.dragLink != None:
                 pygame.draw.line(
@@ -520,13 +528,81 @@ class Main:
                         pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                     )
                 if self.clicked == graphNode:
-                    self.screen.blit(graphNode.image2, (graphNode.x, graphNode.y))
+                    if bool(graphNode.nodeVar.isInit) and not bool(graphNode.nodeVar.isLast) :
+                        self.screen.blit(graphNode.image[0][1], (graphNode.x, graphNode.y))
+                    elif not bool(graphNode.nodeVar.isInit) and bool(graphNode.nodeVar.isLast) and not bool(graphNode.nodeVar.bin) :
+                        self.screen.blit(graphNode.image[1][1], (graphNode.x, graphNode.y))
+                    elif bool(graphNode.nodeVar.isInit) and bool(graphNode.nodeVar.isLast) and not bool(graphNode.nodeVar.bin) :
+                        self.screen.blit(graphNode.image[2][1], (graphNode.x, graphNode.y))
+                    elif bool(graphNode.nodeVar.bin) and not bool(graphNode.nodeVar.isLast) :
+                        self.screen.blit(graphNode.image[3][1], (graphNode.x, graphNode.y))
+                    elif bool(graphNode.nodeVar.bin) and bool(graphNode.nodeVar.isLast):
+                        self.screen.blit(graphNode.image[4][1], (graphNode.x, graphNode.y))
+                    else :
+                        self.screen.blit(graphNode.image[5][1], (graphNode.x, graphNode.y))
                 else:
-                    self.screen.blit(graphNode.image, (graphNode.x, graphNode.y))
+                    if graphNode.nodeVar.isInit and not graphNode.nodeVar.isLast :
+                        self.screen.blit(graphNode.image[0][0], (graphNode.x, graphNode.y))
+                    elif not graphNode.nodeVar.isInit and graphNode.nodeVar.isLast and not graphNode.nodeVar.bin :
+                        self.screen.blit(graphNode.image[1][0], (graphNode.x, graphNode.y))
+                    elif graphNode.nodeVar.isInit and graphNode.nodeVar.isLast and not graphNode.nodeVar.bin :
+                        self.screen.blit(graphNode.image[2][0], (graphNode.x, graphNode.y))
+                    elif graphNode.nodeVar.bin and not graphNode.nodeVar.isLast :
+                        self.screen.blit(graphNode.image[3][0], (graphNode.x, graphNode.y))
+                    elif graphNode.nodeVar.bin and graphNode.nodeVar.isLast:
+                        self.screen.blit(graphNode.image[4][0], (graphNode.x, graphNode.y))
+                    else :
+                        self.screen.blit(graphNode.image[5][0], (graphNode.x, graphNode.y))
                 text_surface = self.my_font.render(
                     graphNode.nodeVar.name, False, (0, 0, 0)
                 )
                 self.screen.blit(text_surface, (graphNode.x + 15, graphNode.y + 15))
+                if (keys[pygame.K_DELETE] and self.clicked == graphNode):
+                    realNode = self.graphicNodeToNodeAddress[graphNode]
+                    self.automate.nodeList.remove(realNode)
+                    if realNode in self.automate.nodeInitList: 
+                        self.automate.nodeInitList.remove(realNode)
+                    if realNode in self.automate.nodeLastList:
+                        self.automate.nodeLastList.remove(realNode)
+                    i = 0
+                    j = 0
+                    while i < len(self.linkList):
+                        while j < len(self.linkList[i]):
+                            if self.linkList[i][j].linkVar[1] == graphNode:
+                                self.linkList[i].remove(self.linkList[i][j])
+                            else:
+                                j += 1
+                        if (self.linkList[i] != [] and self.linkList[i][0].nodeVar == graphNode):
+                            self.linkList.remove(self.linkList[i])
+                        else:
+                            i += 1
+                    self.nodeList.remove(graphNode)
+                if (keys[pygame.K_UP] and self.clicked == graphNode and self.countDownSelectState == 0):
+                    self.countDownSelectState = self.clock.get_time()
+                    realNode = self.graphicNodeToNodeAddress[graphNode]
+                    stateNode = int(realNode.isInit)*4 + int(realNode.isLast)*2 + int(realNode.bin)
+                    if (stateNode == 4):
+                        newState = stateNode + 2
+                    elif (stateNode == 6):
+                        newState = 0
+                    else:
+                        newState = stateNode + 1
+                    realNode.isInit = int("{:03b}".format(newState)[0])
+                    realNode.isLast = int("{:03b}".format(newState)[1])
+                    realNode.bin = int("{:03b}".format(newState)[2])
+                if (keys[pygame.K_DOWN] and self.clicked == graphNode and self.countDownSelectState == 0):
+                    self.countDownSelectState = self.clock.get_time()
+                    realNode = self.graphicNodeToNodeAddress[graphNode]
+                    stateNode = int(realNode.isInit)*4 + int(realNode.isLast)*2 + int(realNode.bin)
+                    if (stateNode == 0):
+                        newState = 6
+                    elif (stateNode == 6):
+                        newState = 4
+                    else:
+                        newState = stateNode - 1
+                    realNode.isInit = int("{:03b}".format(newState)[0])
+                    realNode.isLast = int("{:03b}".format(newState)[1])
+                    realNode.bin = int("{:03b}".format(newState)[2])
 
             self.drawMenu()
             self.drawTransitionMenu()

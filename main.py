@@ -2,7 +2,7 @@ import node
 import automate
 import graphicWindow
 
-file = open("./automates/automateTest27.txt", "r")
+file = open("./automates/automateTest16.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
 
 fileLines = [line.rstrip() for line in file]

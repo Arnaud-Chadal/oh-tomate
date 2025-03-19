@@ -313,8 +313,8 @@ class Automate:
                 numberOfFinalStates += 1
             if node.bin:
                 thereIsABin = True
-
-        filePath = "./automates/" + fileName + ".txt"
+        if ".txt" not in fileName:
+            filePath = "./automates/" + fileName + ".txt"
         if os.path.exists(filePath):
             return False
         file = open(filePath, "w")
