@@ -37,8 +37,6 @@ for groupOfautos in allautos:
                     autoNumber
                 ][1][transitionNumber].split("/")
 
-print(allautos)
-
 nodeTab = []
 for groupNumber in range(len(allautos)):
     for auto in allautos[groupNumber]:
