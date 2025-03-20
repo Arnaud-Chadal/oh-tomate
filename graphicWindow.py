@@ -186,7 +186,12 @@ class Main:
         file = open("./automates/automateTest" + str(fileNumber) + ".txt", "r")
         fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
 
-        fileLines = [line.rstrip() for line in file]
+        fileLines = []
+        isAsynchronous = False
+        for line in file:
+            fileLines.append(line.rstrip())
+            if (not isAsynchronous) and "&" in line:
+                isAsynchronous = True
 
         alphabet = [fullAlphabet[i] for i in range(int(fileLines[0]))]
         allautos = [[], [], [], [], []]
@@ -252,7 +257,7 @@ class Main:
                         [link[0], automateNameToObject[link[1]]]
                     )
 
-        self.automate = automate.Automate(alphabet, nodeTab)
+        self.automate = automate.Automate(alphabet, nodeTab, isAsynchronous)
         self.alphabet = self.automate.alphabet
         self.nodeAddressToGraphicNodeAddress = {}
         self.graphicNodeToNodeAddress = {}
@@ -909,6 +914,7 @@ class Main:
                         realNode.isInit = int("{:03b}".format(newState)[0])
                         realNode.isLast = int("{:03b}".format(newState)[1])
                         realNode.bin = int("{:03b}".format(newState)[2])
+                        self.automate.updateInitAndLastNodeList()
                     if (
                         keys[pygame.K_DOWN]
                         and self.clicked == graphNode

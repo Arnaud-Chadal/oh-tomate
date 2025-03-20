@@ -162,6 +162,17 @@ class Automate:
 
     def toDetermine(self):
 
+        print("-----\n\n\n")
+        for i in self.nodeInitList:
+            print(i)
+        print("-----\n\n\n")
+        for i in self.nodeLastList:
+            print(i)
+        print("-----\n\n\n")
+        for i in self.nodeLastAndInitList:
+            print(i)
+        print("-----\n\n\n")
+
         numberOfNewNode = 0
         nodeNewName = set()
 
@@ -252,11 +263,17 @@ class Automate:
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
         self.backupNodeList[1] = translationTable
 
-    def toMinimize(self):
+    def updateInitAndLastNodeList(self):
+        self.nodeInitList = []
+        self.nodeLastList = []
+        for n in self.nodeList:
+            if n.isInit:
+                self.nodeInitList.append(n)
+            if n.isLast:
+                self.nodeLastList.append(n)
+        self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
 
-        # if not self.isDetermined():
-        #     print("Automate not determined !!")
-        #     return
+    def toMinimize(self):
 
         partition = [[], []]
         newPartition = [[], []]
@@ -327,6 +344,7 @@ class Automate:
                 newPartition[groupNum][0].isInit,
                 newPartition[groupNum][0].isLast,
             )
+            n.bin = newPartition[groupNum][0].bin
             newNode.append(n)
             newNodeDico[n] = partition[groupNum]
         automateNameToObject = {}
@@ -368,6 +386,7 @@ class Automate:
     def toComplement(self):
         for nodeVar in self.nodeList:
             nodeVar.isLast = not nodeVar.isLast
+        self.updateInitAndLastNodeList()
 
     def toStandardize(self):
         newNode = node.Node(str(len(self.nodeList)), True, False)

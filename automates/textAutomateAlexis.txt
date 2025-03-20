@@ -1,0 +1,9 @@
+3
+1
+0;a/1,b/1,c/1
+1
+1;a/Bin,b/Bin,c/Bin
+0
+1
+Bin;a/Bin,b/Bin,c/Bin
+0
