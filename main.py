@@ -95,13 +95,18 @@ else:
 
 firstauto.toDetermine()
 # print(firstauto)
-deterministe = firstauto.isDetermined()
+
 firstauto.toDetermine
 
-if deterministe:
-    print("automate déterministe")
+if firstauto.isComplet:
+    print("complet")
 else:
-    print("automate non déterministe")
+    print("pas complet")
 
+firstauto.toComplete()
+if firstauto.isComplet:
+    print("complet")
+else:
+    print("pas complet")
 # firstauto.toMinimize()
 # print(firstauto)

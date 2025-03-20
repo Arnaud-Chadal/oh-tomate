@@ -51,7 +51,7 @@ class Automate:
 
     def isDetermined(self):
         if self.isAsynchronous:
-            return 0
+            return False
         numberOfInitStates = 0
         alphabetLen = len(self.alphabet)
         for node in self.nodeList:
@@ -59,21 +59,29 @@ class Automate:
             if node.isInit:
                 numberOfInitStates += 1
                 if numberOfInitStates > 1:
-                    return 0
+                    return False
             numberOfTransitions = len(node.linkList)
             if numberOfTransitions > alphabetLen:
-                return 0
+                return False
             for link in node.linkList:
                 if link[0] == "&":
-                    return 0
+                    return False
                 insertionPlace = ord(link[0]) - 97
                 transition[insertionPlace] += 1
                 if transition[insertionPlace] > 1:
-                    return 0
-        return 1
+                    return False
+        return True
 
-    def isCompet(self):
-        pass
+    def isComplet(self):
+        if (not self.isDetermined):
+            return False
+        for node in self.nodeList:
+            toGet = len(self.alphabet)
+            for link in node.linkList:
+                toGet-=1
+            if toGet>0:
+                return False
+        return True
 
     # Méthodes d'action :
 
@@ -274,7 +282,8 @@ class Automate:
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
 
     def toMinimize(self):
-
+        if (not self.isDetermined) or (not self.isComplet):
+            return False
         partition = [[], []]
         newPartition = [[], []]
         for node in self.nodeList:
@@ -384,6 +393,8 @@ class Automate:
                     nodeVar.linkList.append([letter, varBin])
 
     def toComplement(self):
+        if (not self.isComplet):
+            return False
         for nodeVar in self.nodeList:
             nodeVar.isLast = not nodeVar.isLast
         self.updateInitAndLastNodeList()
