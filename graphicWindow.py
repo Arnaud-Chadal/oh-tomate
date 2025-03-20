@@ -7,12 +7,34 @@ import automate
 from math import pi, cos, sin
 import time
 import gc
+import pygame.mixer_music
+import random
 
 
 class Main:
     def __init__(self, automate) -> None:
         pygame.font.init()
+        pygame.mixer.init()
+        self.music = pygame.mixer_music.load("./src/music.mp3")
+        pygame.mixer_music.set_volume(0.7)
+        self.shii = pygame.mixer.Sound("./src/shii.mp3")
+        self.wouu = pygame.mixer.Sound("./src/wouu.mp3")
+        self.sarkozyChatSound = pygame.mixer.Sound("./src/sarkozychat.mp3")
+        self.sarkozyChatSound.set_volume(10)
+        self.standardisationSound = pygame.mixer.Sound("./src/standardisation.mp3")
+        self.determinisationSound = pygame.mixer.Sound("./src/determinisation.mp3")
+        self.complementationSoud = pygame.mixer.Sound("./src/complementation.mp3")
+        self.minimisationSoud = pygame.mixer.Sound("./src/minimisation.mp3")
+        self.completionSound = pygame.mixer.Sound("./src/completion.mp3")
+        self.importExportSound = pygame.mixer.Sound("./src/importExport.mp3")
+        self.checkWordSound = pygame.mixer.Sound("./src/checkWord.mp3")
+        self.clocSound = []
+        for i in range(9):
+            self.clocSound.append(
+                pygame.mixer.Sound("./src/cloc" + str(i + 1) + ".mp3")
+            )
         self.my_font = pygame.font.SysFont("Comic Sans MS", 30)
+        self.playingSound = False
         self.screen = pygame.display.set_mode((1920, 1080))
         self.image = pygame.image.load("./images/verySeriousImage.jpg").convert_alpha()
         self.image = pygame.transform.scale(self.image, (756, 1008))
@@ -99,10 +121,26 @@ class Main:
             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
         ):
             if self.transitionMenuX > 1320:
-                self.transitionMenuX -= 30
+                self.transitionMenuX -= 40
+                if not self.playingSound:
+                    self.shii.play()
+                    self.playingSound = True
         else:
             if self.transitionMenuX < 1920:
-                self.transitionMenuX += 30
+                self.transitionMenuX += 40
+                if not self.playingSound:
+                    self.wouu.play()
+                    self.playingSound = True
+        if (
+            barMenuRect.collidepoint(
+                pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+            )
+            or menuRect.collidepoint(
+                pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+            )
+            and (self.transitionMenuX == 1320 or self.transitionMenuX == 1920)
+        ):
+            self.playingSound = False
         pygame.draw.rect(self.screen, (0, 0, 0), menuRect)
         pygame.draw.rect(self.screen, (0, 0, 255), barMenuRect)
         # self.screen.blit(
@@ -134,16 +172,36 @@ class Main:
             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
         ):
             self.screen.blit(self.image, (300, 0))
+            if not pygame.mixer.Channel(0).get_busy():
+                pygame.mixer.Channel(0).play(self.sarkozyChatSound)
+        else:
+            self.sarkozyChatSound.stop()
         if barMenuRect.collidepoint(
             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
         ) or menuRect.collidepoint(
             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
         ):
             if self.menuY > 880:
-                self.menuY -= 30
+                self.menuY -= 40
+                if not self.playingSound:
+                    self.shii.play()
+                    self.playingSound = True
         else:
             if self.menuY < 1080:
-                self.menuY += 30
+                self.menuY += 40
+                if not self.playingSound:
+                    self.wouu.play()
+                    self.playingSound = True
+        if (
+            barMenuRect.collidepoint(
+                pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+            )
+            or menuRect.collidepoint(
+                pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+            )
+            and (self.menuY == 880 or self.menuY == 1080)
+        ):
+            self.playingSound = False
         pygame.draw.rect(self.screen, (0, 0, 0), menuRect)
         pygame.draw.rect(self.screen, (255, 0, 0), barMenuRect)
         # self.screen.blit(
@@ -295,7 +353,7 @@ class Main:
         self.linkList = []
 
     def importMenu(self):
-        self.screen.fill((0, 0, 0))
+        self.screen.fill((50, 50, 50))
         self.buttonUp.drawButton(self.screen, "Up")
         self.buttonDown.drawButton(self.screen, "Down")
         self.buttonClose.drawButton(self.screen, "Close")
@@ -309,7 +367,7 @@ class Main:
             space += 1
 
     def checkWord(self):
-        self.screen.fill((0, 0, 0))
+        self.screen.fill((50, 50, 50))
         bigFont = pygame.font.SysFont("Comic Sans MS", 120)
         bigTextWaitingFullScreen = bigFont.render(
             "Waiting for input...", 0, (255, 255, 255)
@@ -341,7 +399,7 @@ class Main:
         pygame.display.flip()
         textInput = input("Saisir le texte : ")
         if self.automate.recognize(textInput):
-            self.screen.fill((0, 0, 0))
+            self.screen.fill((50, 50, 50))
             bigFont = pygame.font.SysFont("Comic Sans MS", 120)
             bigTextWaitingFullScreen = bigFont.render(
                 "The word " + textInput, 0, (255, 255, 255)
@@ -373,7 +431,7 @@ class Main:
             pygame.display.flip()
             input("Press enter to continue")
         else:
-            self.screen.fill((0, 0, 0))
+            self.screen.fill((50, 50, 50))
             bigFont = pygame.font.SysFont("Comic Sans MS", 120)
             bigTextWaitingFullScreen = bigFont.render(
                 "The word " + textInput, 0, (255, 255, 255)
@@ -406,8 +464,9 @@ class Main:
             input("Press enter to continue")
 
     def run(self):
+        pygame.mixer_music.play(-1)
         while self.running:
-            self.screen.fill((0, 0, 0))
+            self.screen.fill((50, 50, 50))
             # Check des events
 
             if self.openImportMenu == 0:
@@ -420,6 +479,7 @@ class Main:
                             if graphNode.collision.collidepoint(event.pos):
                                 self.grabbed = graphNode
                                 self.clicked = graphNode
+                                self.clocSound[random.randint(0, 8)].play()
                         for groups in self.linkList:
                             for link in groups:
                                 link.isClicked = False
@@ -436,8 +496,8 @@ class Main:
                         if self.determineButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            print("\n\n\n\--\n")
-                            print(self.automate)
+                            self.determinisationSound.stop()
+                            self.determinisationSound.play()
                             self.automate.toDetermine()
                             self.nodeAddressToGraphicNodeAddress = {}
                             self.graphicNodeToNodeAddress = {}
@@ -473,6 +533,8 @@ class Main:
                         elif self.minimButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
+                            self.minimisationSoud.stop()
+                            self.minimisationSoud.play()
                             self.automate.toMinimize()
                             self.nodeAddressToGraphicNodeAddress = {}
                             self.graphicNodeToNodeAddress = {}
@@ -509,6 +571,8 @@ class Main:
                         elif self.standaButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
+                            self.standardisationSound.stop()
+                            self.standardisationSound.play()
                             self.automate.toStandardize()
                             self.nodeAddressToGraphicNodeAddress = {}
                             self.graphicNodeToNodeAddress = {}
@@ -544,6 +608,8 @@ class Main:
                         elif self.completeButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
+                            self.completionSound.stop()
+                            self.completionSound.play()
                             self.automate.toComplete()
                             self.nodeAddressToGraphicNodeAddress = {}
                             self.graphicNodeToNodeAddress = {}
@@ -579,6 +645,8 @@ class Main:
                         elif self.complementButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
+                            self.complementationSoud.stop()
+                            self.complementationSoud.play()
                             self.automate.toComplement()
                             self.nodeAddressToGraphicNodeAddress = {}
                             self.graphicNodeToNodeAddress = {}
@@ -614,10 +682,14 @@ class Main:
                         elif self.importExportButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
+                            self.importExportSound.stop()
+                            self.importExportSound.play()
                             self.openImportMenu = True
                         elif self.checkWordButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
+                            self.checkWordSound.stop()
+                            self.checkWordSound.play()
                             self.checkWord()
                     elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                         self.clicked = self.grabbed
