@@ -15,8 +15,8 @@ class Automate:
         self.backupNodeList = [nodeList.copy(), [], [], []]
         self.nodeInitList = []
         self.nodeLastList = []
-        self.isAsynchronous=isAsynchronous
-        
+        self.isAsynchronous = isAsynchronous
+
         for node in self.nodeList:
             if node.isInit:
                 self.nodeInitList.append(node)
@@ -50,10 +50,10 @@ class Automate:
         return True
 
     def isDetermined(self):
-        if (self.isAsynchronous):
+        if self.isAsynchronous:
             return 0
-        numberOfInitStates=0
-        alphabetLen=len(self.alphabet)
+        numberOfInitStates = 0
+        alphabetLen = len(self.alphabet)
         for node in self.nodeList:
             transition = [0] * alphabetLen
             if node.isInit:
@@ -64,11 +64,11 @@ class Automate:
             if numberOfTransitions > alphabetLen:
                 return 0
             for link in node.linkList:
-                if (link[0]=='&'):
+                if link[0] == "&":
                     return 0
-                insertionPlace=ord(link[0])-97
-                transition[insertionPlace]+=1
-                if transition[insertionPlace]>1:
+                insertionPlace = ord(link[0]) - 97
+                transition[insertionPlace] += 1
+                if transition[insertionPlace] > 1:
                     return 0
         return 1
 
@@ -78,75 +78,77 @@ class Automate:
     # Méthodes d'action :
 
     def removeEpsilonMove(self):
-        closureToProcess=set()
-        linkFromClosureToProcess=[]
-        newNames={}
+        closureToProcess = set()
+        linkFromClosureToProcess = []
+        newNames = {}
 
-        newLink=[]
-        newIsLast=0
-        newIsInit=0
-        newNodePlace=0
-        newNodes=[]
+        newLink = []
+        newIsLast = 0
+        newIsInit = 0
+        newNodePlace = 0
+        newNodes = []
         for nodeObj in self.nodeList:
-            if (nodeObj.isInit):
+            if nodeObj.isInit:
                 closureToProcess.add(nodeObj)
                 continue
             for link in nodeObj.linkList:
                 if link[0] in self.alphabet:
                     closureToProcess.add(link[1])
         for ele in closureToProcess:
-            newIsLast=0
-            newIsInit=0
-            newLink=[]
-            newName=set()
+            newIsLast = 0
+            newIsInit = 0
+            newLink = []
+            newName = set()
             newName.add(ele.name)
             if ele.isLast:
-                newIsLast=1
+                newIsLast = 1
             if ele.isInit:
-                newIsInit=1
+                newIsInit = 1
             for link in ele.linkList:
-                if link[0]=="&" and (link[1].name not in newName):
+                if link[0] == "&" and (link[1].name not in newName):
                     if link[1].isInit:
-                        newIsInit=1
+                        newIsInit = 1
                     if link[1].isLast:
-                        newIsLast=1 
+                        newIsLast = 1
                     newName.add(link[1].name)
                     linkFromClosureToProcess.append(link[1])
                 if link[0] in self.alphabet:
                     if link[1].isInit:
-                        newIsInit=1
+                        newIsInit = 1
                     if link[1].isLast:
-                        newIsLast=1 
-                    newLink.append([link[0],link[1]]) 
+                        newIsLast = 1
+                    newLink.append([link[0], link[1]])
             while linkFromClosureToProcess:
-                
+
                 for linkToProcess in linkFromClosureToProcess[0].linkList:
-                    #print('ici:',linkToProcess[1].name)
-                    #print(linkToProcess[0])
+                    # print('ici:',linkToProcess[1].name)
+                    # print(linkToProcess[0])
                     if (not newIsInit) and (linkToProcess[1].isInit):
-                        newIsInit=1
+                        newIsInit = 1
                     if (not newIsLast) and (linkToProcess[1].isLast):
-                        newIsLast=1
-                    if linkToProcess[0]=="&" and (linkToProcess[1].name not in newName):
-                        #print("ici &")
+                        newIsLast = 1
+                    if linkToProcess[0] == "&" and (
+                        linkToProcess[1].name not in newName
+                    ):
+                        # print("ici &")
                         newName.add(linkToProcess[1].name)
                         linkFromClosureToProcess.append(linkToProcess[1])
                     if linkToProcess[0] in self.alphabet:
-                        #print("ici alpha")
-                        newLink.append([linkToProcess[0],linkToProcess[1]])
+                        # print("ici alpha")
+                        newLink.append([linkToProcess[0], linkToProcess[1]])
                 del linkFromClosureToProcess[0]
-            newNames[ele.name]=newName
-            
-            newNode=node.Node(str(ele.name),newIsInit,newIsLast)
-            newNode.linkList=newLink
-            newNodePlace+=1
+            newNames[ele.name] = newName
+
+            newNode = node.Node(str(ele.name), newIsInit, newIsLast)
+            newNode.linkList = newLink
+            newNodePlace += 1
             newNodes.append(newNode)
         newNamesIdxMap = {key: i for i, key in enumerate(newNames)}
-        
+
         for myNewNode in newNodes:
             for link in myNewNode.linkList:
-                link[1]=newNodes[newNamesIdxMap.get(link[1].name)]
-        self.nodeList=newNodes.copy()
+                link[1] = newNodes[newNamesIdxMap.get(link[1].name)]
+        self.nodeList = newNodes.copy()
         self.nodeInitList = []
         self.nodeLastList = []
         for n in self.nodeList:
@@ -155,75 +157,97 @@ class Automate:
             if n.isLast:
                 self.nodeLastList.append(n)
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
-        self.isAsynchronous=0
+        self.isAsynchronous = 0
         print(self)
-        
+
     def toDetermine(self):
 
-        numberOfNewNode=0
-        nodeNewName=set()
+        numberOfNewNode = 0
+        nodeNewName = set()
 
-        translationTable=[]
-        oldNodesToProcess=[]
+        translationTable = []
+        oldNodesToProcess = []
 
-        automateNewStructure=[]
-        idxToInvestigate=0
+        automateNewStructure = []
+        idxToInvestigate = 0
 
-        
-        #Étape 1 : rendre l'automate synchrone
+        # Étape 1 : rendre l'automate synchrone
         if self.isAsynchronous:
             self.removeEpsilonMove()
-        
-        #Étape 2 : constituer le nouvel état initial et récupérer les transitions à inspecter
+
+        # Étape 2 : constituer le nouvel état initial et récupérer les transitions à inspecter
         oldNodesToProcess.append(set())
         for nodeObj in self.nodeInitList:
             nodeNewName.add(nodeObj.name)
             oldNodesToProcess[0].add(nodeObj)
         translationTable.append(nodeNewName)
         if self.nodeLastAndInitList:
-            automateNewStructure.append(node.Node(str(numberOfNewNode),1,1))
+            automateNewStructure.append(node.Node(str(numberOfNewNode), 1, 1))
         else:
-            automateNewStructure.append(node.Node(str(numberOfNewNode),1,0))
-        numberOfNewNode+=1
+            automateNewStructure.append(node.Node(str(numberOfNewNode), 1, 0))
+        numberOfNewNode += 1
 
-        #Étape 3 : Parcourir les liens pour créer les nouveaux états 
-        while idxToInvestigate<numberOfNewNode:
-            newName=[set() for i in range(0,len(self.alphabet))]
-            eleForOldNodesToProcess=[[0,set(),False] for i in range(0,len(self.alphabet))]
-           
+        # Étape 3 : Parcourir les liens pour créer les nouveaux états
+        while idxToInvestigate < numberOfNewNode:
+            newName = [set() for i in range(0, len(self.alphabet))]
+            eleForOldNodesToProcess = [
+                [0, set(), False] for i in range(0, len(self.alphabet))
+            ]
+
             for oldNode in oldNodesToProcess[idxToInvestigate]:
                 for link in oldNode.linkList:
-                    if eleForOldNodesToProcess[ord(link[0])-97][0]==0 and link[1].isLast:
-                        eleForOldNodesToProcess[ord(link[0])-97][0]=1
+                    if (
+                        eleForOldNodesToProcess[ord(link[0]) - 97][0] == 0
+                        and link[1].isLast
+                    ):
+                        eleForOldNodesToProcess[ord(link[0]) - 97][0] = 1
                     if link[1].bin:
-                        eleForOldNodesToProcess[ord(link[0])-97][2]=True
-                    newName[ord(link[0])-97].add(link[1].name)
-                    eleForOldNodesToProcess[ord(link[0])-97][1].add(link[1])
-                    
-            for namePlaceInAlpha in range(0, len(self.alphabet)):
-                if newName[namePlaceInAlpha]!=set() and newName[namePlaceInAlpha] not in translationTable:
-                    translationTable.append(newName[namePlaceInAlpha])
-                    newNode=node.Node(str(numberOfNewNode),0,eleForOldNodesToProcess[namePlaceInAlpha][0])
-                    if eleForOldNodesToProcess[namePlaceInAlpha][2]==True:
-                        newNode.bin=True
-                        newNode.name='P'
-                    oldNodesToProcess.append(eleForOldNodesToProcess[namePlaceInAlpha][1])
-                    automateNewStructure.append(newNode)
-                    automateNewStructure[idxToInvestigate].addLinkToLinkList([self.alphabet[namePlaceInAlpha],newNode])
-                    numberOfNewNode+=1
-                elif newName[namePlaceInAlpha] in translationTable:
-                    automateNewStructure[idxToInvestigate].addLinkToLinkList([self.alphabet[namePlaceInAlpha],automateNewStructure[translationTable.index(newName[namePlaceInAlpha])]])
+                        eleForOldNodesToProcess[ord(link[0]) - 97][2] = True
+                    newName[ord(link[0]) - 97].add(link[1].name)
+                    eleForOldNodesToProcess[ord(link[0]) - 97][1].add(link[1])
 
-            idxToInvestigate+=1
-        
-        self.nodeList=automateNewStructure.copy()
+            for namePlaceInAlpha in range(0, len(self.alphabet)):
+                if (
+                    newName[namePlaceInAlpha] != set()
+                    and newName[namePlaceInAlpha] not in translationTable
+                ):
+                    translationTable.append(newName[namePlaceInAlpha])
+                    newNode = node.Node(
+                        str(numberOfNewNode),
+                        0,
+                        eleForOldNodesToProcess[namePlaceInAlpha][0],
+                    )
+                    if eleForOldNodesToProcess[namePlaceInAlpha][2] == True:
+                        newNode.bin = True
+                        newNode.name = "P"
+                    oldNodesToProcess.append(
+                        eleForOldNodesToProcess[namePlaceInAlpha][1]
+                    )
+                    automateNewStructure.append(newNode)
+                    automateNewStructure[idxToInvestigate].addLinkToLinkList(
+                        [self.alphabet[namePlaceInAlpha], newNode]
+                    )
+                    numberOfNewNode += 1
+                elif newName[namePlaceInAlpha] in translationTable:
+                    automateNewStructure[idxToInvestigate].addLinkToLinkList(
+                        [
+                            self.alphabet[namePlaceInAlpha],
+                            automateNewStructure[
+                                translationTable.index(newName[namePlaceInAlpha])
+                            ],
+                        ]
+                    )
+
+            idxToInvestigate += 1
+
+        self.nodeList = automateNewStructure.copy()
 
         self.nodeInitList = []
         self.nodeLastList = []
         for n in self.nodeList:
-            if (n.isInit):
+            if n.isInit:
                 self.nodeInitList.append(n)
-            if (n.isLast):
+            if n.isLast:
                 self.nodeLastList.append(n)
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
         self.backupNodeList[1] = translationTable
@@ -473,22 +497,22 @@ class Automate:
             string += (
                 "========= [Previous array Nodes] -> New Determined node =========\t"
             )
-            
-            stringTabReturn[1].append((
-                "========= [Previous array Nodes] -> New Determined node ========="
-            ))
+
+            stringTabReturn[1].append(
+                ("========= [Previous array Nodes] -> New Determined node =========")
+            )
         if self.backupNodeList[2] != []:
             string += "========= [Previous Array Nodes] -> Complete node =========\t"
-            stringTabReturn[2].append((
-                "========= [Previous Array Nodes] -> Complete node ========="
-            ))
+            stringTabReturn[2].append(
+                ("========= [Previous Array Nodes] -> Complete node =========")
+            )
         if self.backupNodeList[3] != []:
             string += (
                 "========= [Previous Array Nodes] -> New Minimized node =========\t"
             )
-            stringTabReturn[3].append((
-                "========= [Previous Array Nodes] -> New Minimized node ========="
-            ))
+            stringTabReturn[3].append(
+                ("========= [Previous Array Nodes] -> New Minimized node =========")
+            )
         string += "\n"
 
         lenInitial = len(self.backupNodeList[0])
@@ -499,12 +523,16 @@ class Automate:
         for nIndex in range(max(lenInitial, lenDetermined, lenMinimized, lenComplete)):
             if nIndex < lenInitial:
                 string += f"{self.backupNodeList[0][nIndex].getName()}\t".center(35)
-                stringTabReturn[0].append(f"{self.backupNodeList[0][nIndex].getName()}".center(35))
+                stringTabReturn[0].append(
+                    f"{self.backupNodeList[0][nIndex].getName()}".center(35)
+                )
             else:
                 string += " \t".center(35)
             if nIndex < lenDetermined:
                 string += f"{self.backupNodeList[1][nIndex]} -> {nIndex}\t".center(58)
-                stringTabReturn[1].append(f"{self.backupNodeList[1][nIndex]} -> {nIndex}".center(58))
+                stringTabReturn[1].append(
+                    f"{self.backupNodeList[1][nIndex]} -> {nIndex}".center(58)
+                )
             elif lenDetermined != 0:
                 string += "\t\t\t".center(58)
             if lenDetermined == 0:
@@ -513,10 +541,14 @@ class Automate:
                         string += (
                             f"{self.backupNodeList[2][nIndex].getName()}\t".center(58)
                         )
-                        stringTabReturn[2].append(f"{self.backupNodeList[2][nIndex].getName()}".center(58))
+                        stringTabReturn[2].append(
+                            f"{self.backupNodeList[2][nIndex].getName()}".center(58)
+                        )
                     else:
                         string += f"{self.backupNodeList[2][nIndex]}\t".center(58)
-                        stringTabReturn[2].append(f"{self.backupNodeList[2][nIndex]}".center(58))
+                        stringTabReturn[2].append(
+                            f"{self.backupNodeList[2][nIndex]}".center(58)
+                        )
                 elif lenComplete != 0:
                     string += "\t\t\t".center(58)
             else:
@@ -525,16 +557,24 @@ class Automate:
                         string += (
                             f"{self.backupNodeList[2][nIndex]} -> {nIndex}\t".center(58)
                         )
-                        stringTabReturn[2].append(f"{self.backupNodeList[2][nIndex]} -> {nIndex}".center(58))
+                        stringTabReturn[2].append(
+                            f"{self.backupNodeList[2][nIndex]} -> {nIndex}".center(58)
+                        )
                     else:
                         string += f"{self.backupNodeList[2][nIndex]}\t".center(58)
-                        stringTabReturn[2].append(f"{self.backupNodeList[2][nIndex]}".center(58))
+                        stringTabReturn[2].append(
+                            f"{self.backupNodeList[2][nIndex]}".center(58)
+                        )
                 elif lenComplete != 0:
                     string += "\t\t\t".center(58)
             if nIndex < lenMinimized:
                 string += f"{self.backupNodeList[3][nIndex]} -> {self.nodeList[nIndex].getName()}\t".center(
                     63
                 )
-                stringTabReturn[3].append(f"{self.backupNodeList[3][nIndex]} -> {self.nodeList[nIndex].getName()}".center(63))
+                stringTabReturn[3].append(
+                    f"{self.backupNodeList[3][nIndex]} -> {self.nodeList[nIndex].getName()}".center(
+                        63
+                    )
+                )
             string += "\n"
         return stringTabReturn

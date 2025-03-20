@@ -282,7 +282,7 @@ class Main:
 
         nodeTab = []
 
-        self.automate = automate.Automate(alphabet, nodeTab)
+        self.automate = automate.Automate(alphabet, nodeTab, False)
         self.alphabet = self.automate.alphabet
         self.nodeAddressToGraphicNodeAddress = {}
         self.graphicNodeToNodeAddress = {}
@@ -431,6 +431,8 @@ class Main:
                         if self.determineButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
+                            print("\n\n\n\--\n")
+                            print(self.automate)
                             self.automate.toDetermine()
                             self.nodeAddressToGraphicNodeAddress = {}
                             self.graphicNodeToNodeAddress = {}
@@ -966,7 +968,7 @@ class Main:
                         elif self.exportButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.automate.saveToFile("test16")
+                            self.automate.saveToFile("textAutomateAlexis")
                         else:
                             for button in self.buttonImportTab:
                                 if button.rect.collidepoint(

@@ -2,14 +2,14 @@ import node
 import automate
 import graphicWindow
 
-file = open("./automates/automateTest16.txt", "r")
+file = open("./automates/automateTest35.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
-fileLines=[]
-isAsynchronous=False
+fileLines = []
+isAsynchronous = False
 for line in file:
     fileLines.append(line.rstrip())
-    if (not isAsynchronous) and '&' in line:
-        isAsynchronous=True 
+    if (not isAsynchronous) and "&" in line:
+        isAsynchronous = True
 
 alphabet = [fullAlphabet[i] for i in range(int(fileLines[0]))]
 allautos = [[], [], [], [], []]
@@ -87,15 +87,15 @@ print("\n=======================\n")
 # firstauto.toStandardize()
 # print(firstauto)
 # print("\n=======================\n")
-deterministe=firstauto.isDetermined()
+deterministe = firstauto.isDetermined()
 if deterministe:
     print("automate déterministe")
 else:
     print("automate non déterministe")
 
 firstauto.toDetermine()
-#print(firstauto)
-deterministe=firstauto.isDetermined()
+# print(firstauto)
+deterministe = firstauto.isDetermined()
 firstauto.toDetermine
 
 if deterministe:
@@ -105,4 +105,3 @@ else:
 
 # firstauto.toMinimize()
 # print(firstauto)
-
