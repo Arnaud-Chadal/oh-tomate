@@ -58,9 +58,7 @@ class Main:
         self.buttonDown = button.Button(660, 960, 600, 100)
         self.buttonClose = button.Button(20, 20, 100, 100)
         self.buttonNewBlank = button.Button(1650, 20, 250, 100)
-        self.exportButton = button.Button(
-            1650, 960, 250, 100
-        )
+        self.exportButton = button.Button(1650, 960, 250, 100)
         self.clock = pygame.time.Clock()
         self.countDownSelectLetter = 0
         self.countDownSelectState = 0
@@ -111,12 +109,17 @@ class Main:
         string = self.automate.printTransitionTables()
         for groupsNumber in range(len(string)):
             for lineNumber in range(len(string[groupsNumber])):
-                textToRender = my_font.render(string[groupsNumber][lineNumber], 0, (255, 255, 255))
+                textToRender = my_font.render(
+                    string[groupsNumber][lineNumber], 0, (255, 255, 255)
+                )
                 self.screen.blit(
                     textToRender,
                     (
                         self.transitionMenuX + 30,
-                        self.transitionMenuY + 20 + lineNumber * 30 + sum([len(group) for group in string[:groupsNumber]]) * 30,
+                        self.transitionMenuY
+                        + 20
+                        + lineNumber * 30
+                        + sum([len(group) for group in string[:groupsNumber]]) * 30,
                     ),
                 )
 
@@ -177,7 +180,7 @@ class Main:
         self.checkWordButton.drawButton(self.screen, "Check Word")
 
     def importAutomate(self, fileNumber):
-        file = open("./automates/automateTest"+str(fileNumber)+".txt", "r")
+        file = open("./automates/automateTest" + str(fileNumber) + ".txt", "r")
         fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
 
         fileLines = [line.rstrip() for line in file]
@@ -242,8 +245,10 @@ class Main:
             for auto in group:
                 currentNode = automateNameToObject[auto[0]]
                 for link in auto[1]:
-                    currentNode.addLinkToLinkList([link[0], automateNameToObject[link[1]]])
-        
+                    currentNode.addLinkToLinkList(
+                        [link[0], automateNameToObject[link[1]]]
+                    )
+
         self.automate = automate.Automate(alphabet, nodeTab)
         self.alphabet = self.automate.alphabet
         self.nodeAddressToGraphicNodeAddress = {}
@@ -270,10 +275,10 @@ class Main:
             nbr += 1
 
     def createBlankAutomate(self, numberOfLetter):
-        alphabet = ['a', 'b', 'c']
+        alphabet = ["a", "b", "c"]
 
         nodeTab = []
-        
+
         self.automate = automate.Automate(alphabet, nodeTab)
         self.alphabet = self.automate.alphabet
         self.nodeAddressToGraphicNodeAddress = {}
@@ -290,44 +295,107 @@ class Main:
         self.exportButton.drawButton(self.screen, "Export")
         for buttonNumber in range(44):
             self.buttonImportTab.append(button.Button(660, 20, 600, 100))
-        
+
         space = 0
-        for b in self.buttonImportTab[self.importMenuX:self.importMenuY]:
-            b.rect.y = 180 + space*120
-            b.drawButton(self.screen, "Automate " + str(self.importMenuX+space+1))
+        for b in self.buttonImportTab[self.importMenuX : self.importMenuY]:
+            b.rect.y = 180 + space * 120
+            b.drawButton(self.screen, "Automate " + str(self.importMenuX + space + 1))
             space += 1
 
     def checkWord(self):
         self.screen.fill((0, 0, 0))
         bigFont = pygame.font.SysFont("Comic Sans MS", 120)
-        bigTextWaitingFullScreen = bigFont.render("Waiting for input...", 0, (255, 255, 255))
-        bigTextPleaseAnswerConsoleFullScreen = bigFont.render("Write a word in the terminal", 0, (255, 255, 255))
-        bigTextPleaseAnswerConsoleFullScreenNext = bigFont.render("then press enter !", 0, (255, 255, 255))
-        self.screen.blit(bigTextWaitingFullScreen, (0, 0), bigTextWaitingFullScreen.get_rect())
-        self.screen.blit(bigTextPleaseAnswerConsoleFullScreen, (0, bigTextWaitingFullScreen.get_rect().height+50), bigTextPleaseAnswerConsoleFullScreen.get_rect())
-        self.screen.blit(bigTextPleaseAnswerConsoleFullScreenNext, (0, bigTextPleaseAnswerConsoleFullScreen.get_rect().height+20+bigTextWaitingFullScreen.get_rect().height), bigTextPleaseAnswerConsoleFullScreenNext.get_rect())
+        bigTextWaitingFullScreen = bigFont.render(
+            "Waiting for input...", 0, (255, 255, 255)
+        )
+        bigTextPleaseAnswerConsoleFullScreen = bigFont.render(
+            "Write a word in the terminal", 0, (255, 255, 255)
+        )
+        bigTextPleaseAnswerConsoleFullScreenNext = bigFont.render(
+            "then press enter !", 0, (255, 255, 255)
+        )
+        self.screen.blit(
+            bigTextWaitingFullScreen, (0, 0), bigTextWaitingFullScreen.get_rect()
+        )
+        self.screen.blit(
+            bigTextPleaseAnswerConsoleFullScreen,
+            (0, bigTextWaitingFullScreen.get_rect().height + 50),
+            bigTextPleaseAnswerConsoleFullScreen.get_rect(),
+        )
+        self.screen.blit(
+            bigTextPleaseAnswerConsoleFullScreenNext,
+            (
+                0,
+                bigTextPleaseAnswerConsoleFullScreen.get_rect().height
+                + 20
+                + bigTextWaitingFullScreen.get_rect().height,
+            ),
+            bigTextPleaseAnswerConsoleFullScreenNext.get_rect(),
+        )
         pygame.display.flip()
         textInput = input("Saisir le texte : ")
-        if (self.automate.recognize(textInput)):
+        if self.automate.recognize(textInput):
             self.screen.fill((0, 0, 0))
             bigFont = pygame.font.SysFont("Comic Sans MS", 120)
-            bigTextWaitingFullScreen = bigFont.render("The word " + textInput, 0, (255, 255, 255))
-            bigTextPleaseAnswerConsoleFullScreen = bigFont.render("IS recognized !!! Congrats", 0, (255, 255, 255))
-            bigTextPleaseAnswerConsoleFullScreenNext = bigFont.render("Continue in the terminal", 0, (255, 255, 255))
-            self.screen.blit(bigTextWaitingFullScreen, (0, 0), bigTextWaitingFullScreen.get_rect())
-            self.screen.blit(bigTextPleaseAnswerConsoleFullScreen, (0, bigTextWaitingFullScreen.get_rect().height+50), bigTextPleaseAnswerConsoleFullScreen.get_rect())
-            self.screen.blit(bigTextPleaseAnswerConsoleFullScreenNext, (0, bigTextPleaseAnswerConsoleFullScreen.get_rect().height+20+bigTextWaitingFullScreen.get_rect().height), bigTextPleaseAnswerConsoleFullScreenNext.get_rect())
+            bigTextWaitingFullScreen = bigFont.render(
+                "The word " + textInput, 0, (255, 255, 255)
+            )
+            bigTextPleaseAnswerConsoleFullScreen = bigFont.render(
+                "IS recognized !!! Congrats", 0, (255, 255, 255)
+            )
+            bigTextPleaseAnswerConsoleFullScreenNext = bigFont.render(
+                "Continue in the terminal", 0, (255, 255, 255)
+            )
+            self.screen.blit(
+                bigTextWaitingFullScreen, (0, 0), bigTextWaitingFullScreen.get_rect()
+            )
+            self.screen.blit(
+                bigTextPleaseAnswerConsoleFullScreen,
+                (0, bigTextWaitingFullScreen.get_rect().height + 50),
+                bigTextPleaseAnswerConsoleFullScreen.get_rect(),
+            )
+            self.screen.blit(
+                bigTextPleaseAnswerConsoleFullScreenNext,
+                (
+                    0,
+                    bigTextPleaseAnswerConsoleFullScreen.get_rect().height
+                    + 20
+                    + bigTextWaitingFullScreen.get_rect().height,
+                ),
+                bigTextPleaseAnswerConsoleFullScreenNext.get_rect(),
+            )
             pygame.display.flip()
             input("Press enter to continue")
         else:
             self.screen.fill((0, 0, 0))
             bigFont = pygame.font.SysFont("Comic Sans MS", 120)
-            bigTextWaitingFullScreen = bigFont.render("The word " + textInput, 0, (255, 255, 255))
-            bigTextPleaseAnswerConsoleFullScreen = bigFont.render("is NOT recognized....", 0, (255, 255, 255))
-            bigTextPleaseAnswerConsoleFullScreenNext = bigFont.render("Continue in the terminal", 0, (255, 255, 255))
-            self.screen.blit(bigTextWaitingFullScreen, (0, 0), bigTextWaitingFullScreen.get_rect())
-            self.screen.blit(bigTextPleaseAnswerConsoleFullScreen, (0, bigTextWaitingFullScreen.get_rect().height+50), bigTextPleaseAnswerConsoleFullScreen.get_rect())
-            self.screen.blit(bigTextPleaseAnswerConsoleFullScreenNext, (0, bigTextPleaseAnswerConsoleFullScreen.get_rect().height+20+bigTextWaitingFullScreen.get_rect().height), bigTextPleaseAnswerConsoleFullScreenNext.get_rect())
+            bigTextWaitingFullScreen = bigFont.render(
+                "The word " + textInput, 0, (255, 255, 255)
+            )
+            bigTextPleaseAnswerConsoleFullScreen = bigFont.render(
+                "is NOT recognized....", 0, (255, 255, 255)
+            )
+            bigTextPleaseAnswerConsoleFullScreenNext = bigFont.render(
+                "Continue in the terminal", 0, (255, 255, 255)
+            )
+            self.screen.blit(
+                bigTextWaitingFullScreen, (0, 0), bigTextWaitingFullScreen.get_rect()
+            )
+            self.screen.blit(
+                bigTextPleaseAnswerConsoleFullScreen,
+                (0, bigTextWaitingFullScreen.get_rect().height + 50),
+                bigTextPleaseAnswerConsoleFullScreen.get_rect(),
+            )
+            self.screen.blit(
+                bigTextPleaseAnswerConsoleFullScreenNext,
+                (
+                    0,
+                    bigTextPleaseAnswerConsoleFullScreen.get_rect().height
+                    + 20
+                    + bigTextWaitingFullScreen.get_rect().height,
+                ),
+                bigTextPleaseAnswerConsoleFullScreenNext.get_rect(),
+            )
             pygame.display.flip()
             input("Press enter to continue")
 
@@ -335,9 +403,9 @@ class Main:
         while self.running:
             self.screen.fill((0, 0, 0))
             # Check des events
-            
-            if (self.openImportMenu == 0):
-            
+
+            if self.openImportMenu == 0:
+
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         self.running = False
@@ -373,7 +441,9 @@ class Main:
                                     nbr * 200, 50 * nbr, graphNode
                                 )
                                 self.nodeList.append(graphicNo)
-                                self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
+                                self.nodeAddressToGraphicNodeAddress[graphNode] = (
+                                    graphicNo
+                                )
                                 self.graphicNodeToNodeAddress[graphicNo] = graphNode
                                 nbr += 1
                             nbr = 0
@@ -406,7 +476,9 @@ class Main:
                                     nbr * 200, 50 * nbr, graphNode
                                 )
                                 self.nodeList.append(graphicNo)
-                                self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
+                                self.nodeAddressToGraphicNodeAddress[graphNode] = (
+                                    graphicNo
+                                )
                                 self.graphicNodeToNodeAddress[graphicNo] = graphNode
                                 nbr += 1
                             nbr = 0
@@ -440,7 +512,9 @@ class Main:
                                     nbr * 200, 50 * nbr, graphNode
                                 )
                                 self.nodeList.append(graphicNo)
-                                self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
+                                self.nodeAddressToGraphicNodeAddress[graphNode] = (
+                                    graphicNo
+                                )
                                 self.graphicNodeToNodeAddress[graphicNo] = graphNode
                                 nbr += 1
                             nbr = 0
@@ -473,7 +547,9 @@ class Main:
                                     nbr * 200, 50 * nbr, graphNode
                                 )
                                 self.nodeList.append(graphicNo)
-                                self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
+                                self.nodeAddressToGraphicNodeAddress[graphNode] = (
+                                    graphicNo
+                                )
                                 self.graphicNodeToNodeAddress[graphicNo] = graphNode
                                 nbr += 1
                             nbr = 0
@@ -506,7 +582,9 @@ class Main:
                                     nbr * 200, 50 * nbr, graphNode
                                 )
                                 self.nodeList.append(graphicNo)
-                                self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
+                                self.nodeAddressToGraphicNodeAddress[graphNode] = (
+                                    graphicNo
+                                )
                                 self.graphicNodeToNodeAddress[graphicNo] = graphNode
                                 nbr += 1
                             nbr = 0
@@ -526,13 +604,13 @@ class Main:
                                     )
                                 nbr += 1
                         elif self.importExportButton.rect.collidepoint(
-                                pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
-                            ):
-                                self.openImportMenu = True
+                            pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                        ):
+                            self.openImportMenu = True
                         elif self.checkWordButton.rect.collidepoint(
-                                pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
-                            ):
-                                self.checkWord()
+                            pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                        ):
+                            self.checkWord()
                     elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                         self.clicked = self.grabbed
                         self.grabbed = None
@@ -557,7 +635,9 @@ class Main:
                                 newNode,
                             )
                             self.nodeList.append(newGraphicNode)
-                            self.nodeAddressToGraphicNodeAddress[newNode] = newGraphicNode
+                            self.nodeAddressToGraphicNodeAddress[newNode] = (
+                                newGraphicNode
+                            )
                             self.graphicNodeToNodeAddress[newGraphicNode] = newNode
                             print(self.automate)
                         else:
@@ -639,7 +719,9 @@ class Main:
                             linkGroup.remove(links)
                             realNode = self.graphicNodeToNodeAddress[links.nodeVar]
                             linkToDelete = links.linkVar
-                            linkToDelete[1] = self.graphicNodeToNodeAddress[linkToDelete[1]]
+                            linkToDelete[1] = self.graphicNodeToNodeAddress[
+                                linkToDelete[1]
+                            ]
                             realNode.linkList.remove(links.linkVar)
                         if (
                             keys[pygame.K_UP]
@@ -703,39 +785,85 @@ class Main:
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         )
                     if self.clicked == graphNode:
-                        if bool(graphNode.nodeVar.isInit) and not bool(graphNode.nodeVar.isLast) :
-                            self.screen.blit(graphNode.image[0][1], (graphNode.x, graphNode.y))
-                        elif not bool(graphNode.nodeVar.isInit) and bool(graphNode.nodeVar.isLast) and not bool(graphNode.nodeVar.bin) :
-                            self.screen.blit(graphNode.image[1][1], (graphNode.x, graphNode.y))
-                        elif bool(graphNode.nodeVar.isInit) and bool(graphNode.nodeVar.isLast) and not bool(graphNode.nodeVar.bin) :
-                            self.screen.blit(graphNode.image[2][1], (graphNode.x, graphNode.y))
-                        elif bool(graphNode.nodeVar.bin) and not bool(graphNode.nodeVar.isLast) :
-                            self.screen.blit(graphNode.image[3][1], (graphNode.x, graphNode.y))
-                        elif bool(graphNode.nodeVar.bin) and bool(graphNode.nodeVar.isLast):
-                            self.screen.blit(graphNode.image[4][1], (graphNode.x, graphNode.y))
-                        else :
-                            self.screen.blit(graphNode.image[5][1], (graphNode.x, graphNode.y))
+                        if bool(graphNode.nodeVar.isInit) and not bool(
+                            graphNode.nodeVar.isLast
+                        ):
+                            self.screen.blit(
+                                graphNode.image[0][1], (graphNode.x, graphNode.y)
+                            )
+                        elif (
+                            not bool(graphNode.nodeVar.isInit)
+                            and bool(graphNode.nodeVar.isLast)
+                            and not bool(graphNode.nodeVar.bin)
+                        ):
+                            self.screen.blit(
+                                graphNode.image[1][1], (graphNode.x, graphNode.y)
+                            )
+                        elif (
+                            bool(graphNode.nodeVar.isInit)
+                            and bool(graphNode.nodeVar.isLast)
+                            and not bool(graphNode.nodeVar.bin)
+                        ):
+                            self.screen.blit(
+                                graphNode.image[2][1], (graphNode.x, graphNode.y)
+                            )
+                        elif bool(graphNode.nodeVar.bin) and not bool(
+                            graphNode.nodeVar.isLast
+                        ):
+                            self.screen.blit(
+                                graphNode.image[3][1], (graphNode.x, graphNode.y)
+                            )
+                        elif bool(graphNode.nodeVar.bin) and bool(
+                            graphNode.nodeVar.isLast
+                        ):
+                            self.screen.blit(
+                                graphNode.image[4][1], (graphNode.x, graphNode.y)
+                            )
+                        else:
+                            self.screen.blit(
+                                graphNode.image[5][1], (graphNode.x, graphNode.y)
+                            )
                     else:
-                        if graphNode.nodeVar.isInit and not graphNode.nodeVar.isLast :
-                            self.screen.blit(graphNode.image[0][0], (graphNode.x, graphNode.y))
-                        elif not graphNode.nodeVar.isInit and graphNode.nodeVar.isLast and not graphNode.nodeVar.bin :
-                            self.screen.blit(graphNode.image[1][0], (graphNode.x, graphNode.y))
-                        elif graphNode.nodeVar.isInit and graphNode.nodeVar.isLast and not graphNode.nodeVar.bin :
-                            self.screen.blit(graphNode.image[2][0], (graphNode.x, graphNode.y))
-                        elif graphNode.nodeVar.bin and not graphNode.nodeVar.isLast :
-                            self.screen.blit(graphNode.image[3][0], (graphNode.x, graphNode.y))
+                        if graphNode.nodeVar.isInit and not graphNode.nodeVar.isLast:
+                            self.screen.blit(
+                                graphNode.image[0][0], (graphNode.x, graphNode.y)
+                            )
+                        elif (
+                            not graphNode.nodeVar.isInit
+                            and graphNode.nodeVar.isLast
+                            and not graphNode.nodeVar.bin
+                        ):
+                            self.screen.blit(
+                                graphNode.image[1][0], (graphNode.x, graphNode.y)
+                            )
+                        elif (
+                            graphNode.nodeVar.isInit
+                            and graphNode.nodeVar.isLast
+                            and not graphNode.nodeVar.bin
+                        ):
+                            self.screen.blit(
+                                graphNode.image[2][0], (graphNode.x, graphNode.y)
+                            )
+                        elif graphNode.nodeVar.bin and not graphNode.nodeVar.isLast:
+                            self.screen.blit(
+                                graphNode.image[3][0], (graphNode.x, graphNode.y)
+                            )
                         elif graphNode.nodeVar.bin and graphNode.nodeVar.isLast:
-                            self.screen.blit(graphNode.image[4][0], (graphNode.x, graphNode.y))
-                        else :
-                            self.screen.blit(graphNode.image[5][0], (graphNode.x, graphNode.y))
+                            self.screen.blit(
+                                graphNode.image[4][0], (graphNode.x, graphNode.y)
+                            )
+                        else:
+                            self.screen.blit(
+                                graphNode.image[5][0], (graphNode.x, graphNode.y)
+                            )
                     text_surface = self.my_font.render(
                         graphNode.nodeVar.name, False, (0, 0, 0)
                     )
                     self.screen.blit(text_surface, (graphNode.x + 15, graphNode.y + 15))
-                    if (keys[pygame.K_DELETE] and self.clicked == graphNode):
+                    if keys[pygame.K_DELETE] and self.clicked == graphNode:
                         realNode = self.graphicNodeToNodeAddress[graphNode]
                         self.automate.nodeList.remove(realNode)
-                        if realNode in self.automate.nodeInitList: 
+                        if realNode in self.automate.nodeInitList:
                             self.automate.nodeInitList.remove(realNode)
                         if realNode in self.automate.nodeLastList:
                             self.automate.nodeLastList.remove(realNode)
@@ -747,31 +875,50 @@ class Main:
                                     self.linkList[i].remove(self.linkList[i][j])
                                 else:
                                     j += 1
-                            if (self.linkList[i] != [] and self.linkList[i][0].nodeVar == graphNode):
+                            if (
+                                self.linkList[i] != []
+                                and self.linkList[i][0].nodeVar == graphNode
+                            ):
                                 self.linkList.remove(self.linkList[i])
                             else:
                                 i += 1
                         self.nodeList.remove(graphNode)
-                    if (keys[pygame.K_UP] and self.clicked == graphNode and self.countDownSelectState == 0):
+                    if (
+                        keys[pygame.K_UP]
+                        and self.clicked == graphNode
+                        and self.countDownSelectState == 0
+                    ):
                         self.countDownSelectState = self.clock.get_time()
                         realNode = self.graphicNodeToNodeAddress[graphNode]
-                        stateNode = int(realNode.isInit)*4 + int(realNode.isLast)*2 + int(realNode.bin)
-                        if (stateNode == 4):
+                        stateNode = (
+                            int(realNode.isInit) * 4
+                            + int(realNode.isLast) * 2
+                            + int(realNode.bin)
+                        )
+                        if stateNode == 4:
                             newState = stateNode + 2
-                        elif (stateNode == 6):
+                        elif stateNode == 6:
                             newState = 0
                         else:
                             newState = stateNode + 1
                         realNode.isInit = int("{:03b}".format(newState)[0])
                         realNode.isLast = int("{:03b}".format(newState)[1])
                         realNode.bin = int("{:03b}".format(newState)[2])
-                    if (keys[pygame.K_DOWN] and self.clicked == graphNode and self.countDownSelectState == 0):
+                    if (
+                        keys[pygame.K_DOWN]
+                        and self.clicked == graphNode
+                        and self.countDownSelectState == 0
+                    ):
                         self.countDownSelectState = self.clock.get_time()
                         realNode = self.graphicNodeToNodeAddress[graphNode]
-                        stateNode = int(realNode.isInit)*4 + int(realNode.isLast)*2 + int(realNode.bin)
-                        if (stateNode == 0):
+                        stateNode = (
+                            int(realNode.isInit) * 4
+                            + int(realNode.isLast) * 2
+                            + int(realNode.bin)
+                        )
+                        if stateNode == 0:
                             newState = 6
-                        elif (stateNode == 6):
+                        elif stateNode == 6:
                             newState = 4
                         else:
                             newState = stateNode - 1
@@ -783,38 +930,56 @@ class Main:
                 self.drawTransitionMenu()
 
             else:
-                
+
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         self.running = False
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                        if (self.buttonClose.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
+                        if self.buttonClose.rect.collidepoint(
+                            pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                        ):
                             self.openImportMenu = False
-                        elif (self.buttonUp.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]) and self.importMenuY < 44):
+                        elif (
+                            self.buttonDown.rect.collidepoint(
+                                pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                            )
+                            and self.importMenuY < 44
+                        ):
                             self.importMenuY += 1
                             self.importMenuX += 1
-                        elif (self.buttonDown.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]) and self.importMenuX > 0):
+                        elif (
+                            self.buttonUp.rect.collidepoint(
+                                pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                            )
+                            and self.importMenuX > 0
+                        ):
                             self.importMenuY -= 1
                             self.importMenuX -= 1
-                        elif (self.buttonNewBlank.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
+                        elif self.buttonNewBlank.rect.collidepoint(
+                            pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                        ):
                             self.createBlankAutomate(3)
                             self.openImportMenu = False
                         elif self.exportButton.rect.collidepoint(
-                                pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
-                            ):
-                                self.automate.saveToFile("test16")
+                            pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                        ):
+                            self.automate.saveToFile("test16")
                         else:
                             for button in self.buttonImportTab:
-                                if button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-                                    self.importAutomate(self.buttonImportTab.index(button)+1)
+                                if button.rect.collidepoint(
+                                    pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                                ):
+                                    self.importAutomate(
+                                        self.buttonImportTab.index(button) + 1
+                                    )
                                     self.openImportMenu = False
                     # elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
 
                     # elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
 
                     # elif event.type == pygame.MOUSEBUTTONUP and event.button == 3:
-                
+
                 self.importMenu()
-                
+
             pygame.display.flip()
             self.clock.tick(60)
