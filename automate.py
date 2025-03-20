@@ -32,9 +32,6 @@ class Automate:
 
     # Méthode de vérification :
 
-    def isMinimized(self):
-        pass
-
     def isStantard(self):
         numberOfInitialNodesIsOk = False
         for node in self.nodeList:
@@ -79,7 +76,7 @@ class Automate:
             toGet = len(self.alphabet)
             for link in node.linkList:
                 toGet-=1
-            if toGet>0:
+            if toGet>0 in transition:
                 return False
         return True
 
@@ -170,17 +167,6 @@ class Automate:
 
     def toDetermine(self):
 
-        print("-----\n\n\n")
-        for i in self.nodeInitList:
-            print(i)
-        print("-----\n\n\n")
-        for i in self.nodeLastList:
-            print(i)
-        print("-----\n\n\n")
-        for i in self.nodeLastAndInitList:
-            print(i)
-        print("-----\n\n\n")
-
         numberOfNewNode = 0
         nodeNewName = set()
 
@@ -261,14 +247,7 @@ class Automate:
 
         self.nodeList = automateNewStructure.copy()
 
-        self.nodeInitList = []
-        self.nodeLastList = []
-        for n in self.nodeList:
-            if n.isInit:
-                self.nodeInitList.append(n)
-            if n.isLast:
-                self.nodeLastList.append(n)
-        self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
+        self.updateInitAndLastNodeList()
         self.backupNodeList[1] = translationTable
 
     def updateInitAndLastNodeList(self):
@@ -282,7 +261,7 @@ class Automate:
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
 
     def toMinimize(self):
-        if (not self.isDetermined) or (not self.isComplet):
+        if (not self.isComplet):
             return False
         partition = [[], []]
         newPartition = [[], []]
@@ -332,7 +311,6 @@ class Automate:
                         else:
                             currentIndex += 1
                     indexCurrent += 1
-            print(transition)
 
             newPartition = []
             for i in currentPartition:
@@ -366,8 +344,11 @@ class Automate:
                         n.addLinkToLinkList([self.alphabet[linkNum], key])
 
         self.nodeList = newNode.copy()
+        return True
 
     def toComplete(self):
+        if (not self.isDetermined):
+            return False
         varBin = 0
         for nodeVar in self.nodeList:
             if nodeVar.bin:
@@ -391,6 +372,7 @@ class Automate:
                         linkExists = True
                 if not linkExists:
                     nodeVar.linkList.append([letter, varBin])
+        return True
 
     def toComplement(self):
         if (not self.isComplet):
@@ -398,6 +380,7 @@ class Automate:
         for nodeVar in self.nodeList:
             nodeVar.isLast = not nodeVar.isLast
         self.updateInitAndLastNodeList()
+        return True
 
     def toStandardize(self):
         newNode = node.Node(str(len(self.nodeList)), True, False)
