@@ -6,6 +6,7 @@ import button
 import automate
 from math import pi, cos, sin
 import time
+import gc
 
 
 class Main:
@@ -54,6 +55,8 @@ class Main:
             self.menuX + 1645, self.menuY + 100 - 30, 200, 80
         )
         self.buttonImportTab = []
+        for buttonNumber in range(44):
+            self.buttonImportTab.append(button.Button(660, 20, 600, 100))
         self.buttonUp = button.Button(660, 20, 600, 100)
         self.buttonDown = button.Button(660, 960, 600, 100)
         self.buttonClose = button.Button(20, 20, 100, 100)
@@ -293,8 +296,6 @@ class Main:
         self.buttonClose.drawButton(self.screen, "Close")
         self.buttonNewBlank.drawButton(self.screen, "Create blank")
         self.exportButton.drawButton(self.screen, "Export")
-        for buttonNumber in range(44):
-            self.buttonImportTab.append(button.Button(660, 20, 600, 100))
 
         space = 0
         for b in self.buttonImportTab[self.importMenuX : self.importMenuY]:
@@ -717,12 +718,14 @@ class Main:
                         rectArrowDrawed.append(links.collision)
                         if keys[pygame.K_DELETE] and self.clicked == links:
                             linkGroup.remove(links)
+                            gc.collect()
                             realNode = self.graphicNodeToNodeAddress[links.nodeVar]
                             linkToDelete = links.linkVar
                             linkToDelete[1] = self.graphicNodeToNodeAddress[
                                 linkToDelete[1]
                             ]
                             realNode.linkList.remove(links.linkVar)
+                            gc.collect()
                         if (
                             keys[pygame.K_UP]
                             and self.clicked == links
@@ -730,9 +733,6 @@ class Main:
                         ):
                             self.countDownSelectLetter = int(self.clock.get_time())
                             lettersAvailable = self.alphabet.copy()
-                            # for allNodeLinks in self.graphicNodeToNodeAddress[links.nodeVar].linkList:
-                            #     if allNodeLinks[0] in lettersAvailable:
-                            #         lettersAvailable.remove(allNodeLinks[0])
                             if lettersAvailable != []:
                                 counterSelectLetter += 1
                                 realNode = self.graphicNodeToNodeAddress[links.nodeVar]
@@ -757,9 +757,6 @@ class Main:
                         ):
                             self.countDownSelectLetter = int(self.clock.get_time())
                             lettersAvailable = self.alphabet.copy()
-                            # for allNodeLinks in self.graphicNodeToNodeAddress[links.nodeVar].linkList:
-                            #     if allNodeLinks[0] in lettersAvailable:
-                            #         lettersAvailable.remove(allNodeLinks[0])
                             if lettersAvailable != []:
                                 counterSelectLetter -= 1
                                 realNode = self.graphicNodeToNodeAddress[links.nodeVar]
@@ -863,16 +860,20 @@ class Main:
                     if keys[pygame.K_DELETE] and self.clicked == graphNode:
                         realNode = self.graphicNodeToNodeAddress[graphNode]
                         self.automate.nodeList.remove(realNode)
+                        gc.collect()
                         if realNode in self.automate.nodeInitList:
                             self.automate.nodeInitList.remove(realNode)
+                            gc.collect()
                         if realNode in self.automate.nodeLastList:
                             self.automate.nodeLastList.remove(realNode)
+                            gc.collect()
                         i = 0
                         j = 0
                         while i < len(self.linkList):
                             while j < len(self.linkList[i]):
                                 if self.linkList[i][j].linkVar[1] == graphNode:
                                     self.linkList[i].remove(self.linkList[i][j])
+                                    gc.collect()
                                 else:
                                     j += 1
                             if (
@@ -880,9 +881,11 @@ class Main:
                                 and self.linkList[i][0].nodeVar == graphNode
                             ):
                                 self.linkList.remove(self.linkList[i])
+                                gc.collect()
                             else:
                                 i += 1
                         self.nodeList.remove(graphNode)
+                        gc.collect()
                     if (
                         keys[pygame.K_UP]
                         and self.clicked == graphNode
