@@ -1,7 +1,8 @@
 import node
 import automate
+import graphicWindow
 
-file = open("./automates/perso.txt", "r")
+file = open("./automates/automateTest16.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
 fileLines=[]
 isAsynchronous=False
@@ -40,8 +41,6 @@ for groupOfautos in allautos:
                     autoNumber
                 ][1][transitionNumber].split("/")
 
-print(allautos)
-
 nodeTab = []
 for groupNumber in range(len(allautos)):
     for auto in allautos[groupNumber]:
@@ -77,6 +76,12 @@ for group in allautos:
 
 firstauto = automate.Automate(alphabet, nodeTab, isAsynchronous)
 print(firstauto)
+deterministe = firstauto.isDetermined()
+if deterministe:
+    print("automate déterministe")
+else:
+    print("automate non déterministe")
+graphicWindow.Main(firstauto).run()
 print("\n=======================\n")
 # print(firstauto.isStantard())
 # firstauto.toStandardize()
@@ -98,17 +103,6 @@ if deterministe:
 else:
     print("automate non déterministe")
 
-
-# print("\n=======================\n")
-#firstauto.toComplete()
-
+# firstauto.toMinimize()
 # print(firstauto)
-# print("\n=======================\n")
 
-firstauto.toMinimize()
-print(firstauto)
-
-"""
-print(firstauto.recognize("abababbbbb"))
-print(firstauto.printTransitionTables())
-"""
