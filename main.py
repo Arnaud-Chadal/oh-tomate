@@ -1,7 +1,7 @@
 import node
 import automate
 
-file = open("./automates/automateTest41.txt", "r")
+file = open("./automates/perso.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
 fileLines=[]
 isAsynchronous=False
@@ -89,8 +89,10 @@ else:
     print("automate non déterministe")
 
 firstauto.toDetermine()
-print(firstauto)
+#print(firstauto)
 deterministe=firstauto.isDetermined()
+firstauto.toDetermine
+
 if deterministe:
     print("automate déterministe")
 else:
@@ -98,14 +100,15 @@ else:
 
 
 # print("\n=======================\n")
-# firstauto.toComplete()
+#firstauto.toComplete()
 
 # print(firstauto)
 # print("\n=======================\n")
-"""
+
 firstauto.toMinimize()
 print(firstauto)
 
+"""
 print(firstauto.recognize("abababbbbb"))
 print(firstauto.printTransitionTables())
 """

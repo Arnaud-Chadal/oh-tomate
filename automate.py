@@ -155,94 +155,67 @@ class Automate:
                 self.nodeLastList.append(n)
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
         self.isAsynchronous=0
+        print(self)
         
-
-
     def toDetermine(self):
+
+        numberOfNewNode=0
+        nodeNewName=set()
+
+        translationTable=[]
+        oldNodesToProcess=[]
+
+        automateNewStructure=[]
+        idxToInvestigate=0
+
+        
+        #Étape 1 : rendre l'automate synchrone
         if self.isAsynchronous:
             self.removeEpsilonMove()
         
+        #Étape 2 : constituer le nouvel état initial et récupérer les transitions à inspecter
+        oldNodesToProcess.append(set())
+        for nodeObj in self.nodeInitList:
+            nodeNewName.add(nodeObj.name)
+            oldNodesToProcess[0].add(nodeObj)
+        translationTable.append(nodeNewName)
+        if self.nodeLastAndInitList:
+            automateNewStructure.append(node.Node(str(numberOfNewNode),1,1))
+        else:
+            automateNewStructure.append(node.Node(str(numberOfNewNode),1,0))
+        numberOfNewNode+=1
+
+        #Étape 3 : Parcourir les liens pour créer les nouveaux états 
+        while idxToInvestigate<numberOfNewNode:
+            newName=[set() for i in range(0,len(self.alphabet))]
+            eleForOldNodesToProcess=[[0,set(),False] for i in range(0,len(self.alphabet))]
+           
+            for oldNode in oldNodesToProcess[idxToInvestigate]:
+                for link in oldNode.linkList:
+                    if eleForOldNodesToProcess[ord(link[0])-97][0]==0 and link[1].isLast:
+                        eleForOldNodesToProcess[ord(link[0])-97][0]=1
+                    if link[1].bin:
+                        eleForOldNodesToProcess[ord(link[0])-97][2]=True
+                    newName[ord(link[0])-97].add(link[1].name)
+                    eleForOldNodesToProcess[ord(link[0])-97][1].add(link[1])
+                    
+            for namePlaceInAlpha in range(0, len(self.alphabet)):
+                if newName[namePlaceInAlpha]!=set() and newName[namePlaceInAlpha] not in translationTable:
+                    translationTable.append(newName[namePlaceInAlpha])
+                    newNode=node.Node(str(numberOfNewNode),0,eleForOldNodesToProcess[namePlaceInAlpha][0])
+                    if eleForOldNodesToProcess[namePlaceInAlpha][2]==True:
+                        newNode.bin=True
+                        newNode.name='P'
+                    oldNodesToProcess.append(eleForOldNodesToProcess[namePlaceInAlpha][1])
+                    automateNewStructure.append(newNode)
+                    automateNewStructure[idxToInvestigate].addLinkToLinkList([self.alphabet[namePlaceInAlpha],newNode])
+                    numberOfNewNode+=1
+                elif newName[namePlaceInAlpha] in translationTable:
+                    automateNewStructure[idxToInvestigate].addLinkToLinkList([self.alphabet[namePlaceInAlpha],automateNewStructure[translationTable.index(newName[namePlaceInAlpha])]])
+
+            idxToInvestigate+=1
         
-        shouldWeContinue=0
-        alphabetLen=len(self.alphabet)
-        oldInit=[]
-        newIsLast=0
-        newIsBin=0
-        transitions=[]
-        newTransitions=[]
-        transitionPlaceToInsert=0
-        newName=set()
-        newNames=[]
-        newNodes=[]
-        newNodePlace=0
-        for nodeObj in self.nodeList:
-            if nodeObj.isInit:
-                oldInit.append(nodeObj)
-                if (not(newIsLast) and nodeObj.isLast):
-                    newIsLast=1
-        newNode=node.Node(str(newNodePlace),1,newIsLast)
-        newNodePlace+=1
-        newNodes.append(newNode)
-        transitions.append([[] for i in range (0,len(self.alphabet))])
-        newTransitions.append([set() for i in range (0,len(self.alphabet))])
-        transitionPlaceToInsert+=1
-
-        for initState in oldInit:
-            newName.add(str(initState.name))
-            for link in initState.linkList:
-                
-                transitions[transitionPlaceToInsert-1][ord(link[0])-97].append(link[1])
-                newTransitions[transitionPlaceToInsert-1][ord(link[0])-97].add(link[1].name)
-                shouldWeContinue=1
-        if newNames != set():
-            newNames.append(newName)
-        transitionPlaceToRead=0
-        while shouldWeContinue:
-            
-            shouldWeContinue=0
-            for nodeList in transitions[transitionPlaceToRead]:
-                newIsLast=0
-                newName=set()
-                transitions.append([[] for i in range (0,len(self.alphabet))])
-                newTransitions.append([set() for i in range (0,len(self.alphabet))])
-                transitionPlaceToInsert+=1
-                for nodeObj in nodeList:
-                    if (not newIsLast) and nodeObj.isLast:
-                        newIsLast=1
-                    if (not newIsBin) and nodeObj.bin:
-                        newIsBin=1
-                    if nodeObj.name not in newName:
-                        newName.add(str(nodeObj.name))
-                        
-                        for link in nodeObj.linkList: 
-                            transitions[transitionPlaceToInsert-1][ord(link[0])-97].append(link[1])
-                            newTransitions[transitionPlaceToInsert-1][ord(link[0])-97].add(link[1].name)
-                           
-                if (newName not in newNames) and (newName != set()):
-                        shouldWeContinue=1
-                        newNames.append(newName)
-                        newNode=node.Node(str(newNodePlace),0,newIsLast)
-                        if newIsBin:
-                            newNode.bin=True
-                            newNode.name='P'
-                        newNodePlace+=1
-                        newNodes.append(newNode)
-                else:
-                    del transitions[transitionPlaceToInsert-1]
-                    del newTransitions[transitionPlaceToInsert-1]
-                    transitionPlaceToInsert-=1
-            transitionPlaceToRead+=1
-       
-        for i in range (0, len(newNames)):
-            letter=0
-
-            for newTransition in newTransitions[i]:
-                if len(newTransition) != 0:
-                    newNodes[i].addLinkToLinkList([self.alphabet[letter],newNodes[newNames.index(newTransition)]])
-                letter+=1
-
-        #récupérer newNames
-        self.nodeList=newNodes.copy()
+        self.nodeList=automateNewStructure.copy()
 
         self.nodeInitList = []
         self.nodeLastList = []
@@ -252,8 +225,7 @@ class Automate:
             if (n.isLast):
                 self.nodeLastList.append(n)
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
-        self.backupNodeList[1] = newNames
-        
+        self.backupNodeList[1] = translationTable
         
 
     def toMinimize(self):
