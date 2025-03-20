@@ -70,13 +70,13 @@ class Automate:
         return True
 
     def isComplet(self):
-        if (not self.isDetermined):
+        if not self.isDetermined:
             return False
         for node in self.nodeList:
             toGet = len(self.alphabet)
             for link in node.linkList:
-                toGet-=1
-            if toGet>0 in transition:
+                toGet -= 1
+            if toGet > 0:
                 return False
         return True
 
@@ -261,7 +261,7 @@ class Automate:
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
 
     def toMinimize(self):
-        if (not self.isComplet):
+        if not self.isComplet:
             return False
         partition = [[], []]
         newPartition = [[], []]
@@ -347,7 +347,7 @@ class Automate:
         return True
 
     def toComplete(self):
-        if (not self.isDetermined):
+        if not self.isDetermined:
             return False
         varBin = 0
         for nodeVar in self.nodeList:
@@ -375,7 +375,7 @@ class Automate:
         return True
 
     def toComplement(self):
-        if (not self.isComplet):
+        if not self.isComplet:
             return False
         for nodeVar in self.nodeList:
             nodeVar.isLast = not nodeVar.isLast
