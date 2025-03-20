@@ -241,104 +241,107 @@ class Main:
         self.checkWordButton.drawButton(self.screen, "Check Word")
 
     def importAutomate(self, fileNumber):
-        file = open("./automates/automateTest" + str(fileNumber) + ".txt", "r")
-        fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
+        error = self.testConforme("./automates/automateTest" + str(fileNumber) + ".txt")
+        if error == "Un fichier aux petits onions, soyez fier de vous !" :
+            file = open("./automates/automateTest" + str(fileNumber) + ".txt", "r")
+            fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
 
-        fileLines = []
-        isAsynchronous = False
-        for line in file:
-            fileLines.append(line.rstrip())
-            if (not isAsynchronous) and "&" in line:
-                isAsynchronous = True
+            fileLines = []
+            isAsynchronous = False
+            for line in file:
+                fileLines.append(line.rstrip())
+                if (not isAsynchronous) and "&" in line:
+                    isAsynchronous = True
 
-        alphabet = [fullAlphabet[i] for i in range(int(fileLines[0]))]
-        allautos = [[], [], [], [], []]
+            alphabet = [fullAlphabet[i] for i in range(int(fileLines[0]))]
+            allautos = [[], [], [], [], []]
 
-        # EXTRACTION DES AUTOS DEPUIS LE FICHIER TXT
-        counter = 0
-        index = -1
-        for line in fileLines[1:]:
-            if counter == 0:
-                index += 1
-                counter = int(line)
-            else:
-                allautos[index].append(line)
-                counter -= 1
+            # EXTRACTION DES AUTOS DEPUIS LE FICHIER TXT
+            counter = 0
+            index = -1
+            for line in fileLines[1:]:
+                if counter == 0:
+                    index += 1
+                    counter = int(line)
+                else:
+                    allautos[index].append(line)
+                    counter -= 1
 
-        automateNameToObject = {}
+            automateNameToObject = {}
 
-        # SPLIT DES AUTOS
-        for groupOfautos in allautos:
-            for autoNumber in range(len(groupOfautos)):
-                groupOfautos[autoNumber] = groupOfautos[autoNumber].split(";")
-                if len(groupOfautos[autoNumber]) == 1:
-                    groupOfautos[autoNumber].append([])
-                elif len(groupOfautos[autoNumber]) == 2:
-                    groupOfautos[autoNumber][1] = groupOfautos[autoNumber][1].split(",")
-                    numberOfTransitions = len(groupOfautos[autoNumber][1])
-                    for transitionNumber in range(numberOfTransitions):
-                        groupOfautos[autoNumber][1][transitionNumber] = groupOfautos[
-                            autoNumber
-                        ][1][transitionNumber].split("/")
+            # SPLIT DES AUTOS
+            for groupOfautos in allautos:
+                for autoNumber in range(len(groupOfautos)):
+                    groupOfautos[autoNumber] = groupOfautos[autoNumber].split(";")
+                    if len(groupOfautos[autoNumber]) == 1:
+                        groupOfautos[autoNumber].append([])
+                    elif len(groupOfautos[autoNumber]) == 2:
+                        groupOfautos[autoNumber][1] = groupOfautos[autoNumber][1].split(",")
+                        numberOfTransitions = len(groupOfautos[autoNumber][1])
+                        for transitionNumber in range(numberOfTransitions):
+                            groupOfautos[autoNumber][1][transitionNumber] = groupOfautos[
+                                autoNumber
+                            ][1][transitionNumber].split("/")
 
-        nodeTab = []
-        for groupNumber in range(len(allautos)):
-            for auto in allautos[groupNumber]:
-                isAlreadyHere = False
-                newNode = node.Node(auto[0], False, False)
-                if groupNumber == 0:
-                    newNode.isInit = True
-                    nodeTab.append(newNode)
-                if groupNumber == 1:
-                    newNode.isLast = True
-                    nodeTab.append(newNode)
-                if groupNumber == 2:
-                    newNode.isInit = newNode.isLast = True
-                    nodeTab.append(newNode)
-                if groupNumber == 3:
-                    for n in nodeTab:
-                        if auto[0] == n.getName():
-                            isAlreadyHere = True
-                            n.setBin(True)
-                    if isAlreadyHere == False:
+            nodeTab = []
+            for groupNumber in range(len(allautos)):
+                for auto in allautos[groupNumber]:
+                    isAlreadyHere = False
+                    newNode = node.Node(auto[0], False, False)
+                    if groupNumber == 0:
+                        newNode.isInit = True
                         nodeTab.append(newNode)
-                if groupNumber == 4:
-                    nodeTab.append(newNode)
-                if not isAlreadyHere:
-                    automateNameToObject[auto[0]] = newNode
+                    if groupNumber == 1:
+                        newNode.isLast = True
+                        nodeTab.append(newNode)
+                    if groupNumber == 2:
+                        newNode.isInit = newNode.isLast = True
+                        nodeTab.append(newNode)
+                    if groupNumber == 3:
+                        for n in nodeTab:
+                            if auto[0] == n.getName():
+                                isAlreadyHere = True
+                                n.setBin(True)
+                        if isAlreadyHere == False:
+                            nodeTab.append(newNode)
+                    if groupNumber == 4:
+                        nodeTab.append(newNode)
+                    if not isAlreadyHere:
+                        automateNameToObject[auto[0]] = newNode
 
-        for group in allautos:
-            for auto in group:
-                currentNode = automateNameToObject[auto[0]]
-                for link in auto[1]:
-                    currentNode.addLinkToLinkList(
-                        [link[0], automateNameToObject[link[1]]]
-                    )
+            for group in allautos:
+                for auto in group:
+                    currentNode = automateNameToObject[auto[0]]
+                    for link in auto[1]:
+                        currentNode.addLinkToLinkList(
+                            [link[0], automateNameToObject[link[1]]]
+                        )
 
-        self.automate = automate.Automate(alphabet, nodeTab, isAsynchronous)
-        self.alphabet = self.automate.alphabet
-        self.nodeAddressToGraphicNodeAddress = {}
-        self.graphicNodeToNodeAddress = {}
-        self.nodeList = []
-        self.linkList = []
-        nbr = 0
-        for graphNode in self.automate.nodeList:
-            graphicNo = graphicNode.GraphicNode(nbr * 200, 50 * nbr, graphNode)
-            self.nodeList.append(graphicNo)
-            self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
-            self.graphicNodeToNodeAddress[graphicNo] = graphNode
-            nbr += 1
-        nbr = 0
-        for graphNode in self.automate.nodeList:
-            self.linkList.append([])
-            for link in graphNode.linkList:
-                self.linkList[nbr].append(
-                    graphicLink.GraphicLink(
-                        [link[0], self.nodeAddressToGraphicNodeAddress[link[1]]],
-                        self.nodeList[nbr],
+            self.automate = automate.Automate(alphabet, nodeTab, isAsynchronous)
+            self.alphabet = self.automate.alphabet
+            self.nodeAddressToGraphicNodeAddress = {}
+            self.graphicNodeToNodeAddress = {}
+            self.nodeList = []
+            self.linkList = []
+            nbr = 0
+            for graphNode in self.automate.nodeList:
+                graphicNo = graphicNode.GraphicNode(nbr * 200, 50 * nbr, graphNode)
+                self.nodeList.append(graphicNo)
+                self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
+                self.graphicNodeToNodeAddress[graphicNo] = graphNode
+                nbr += 1
+            nbr = 0
+            for graphNode in self.automate.nodeList:
+                self.linkList.append([])
+                for link in graphNode.linkList:
+                    self.linkList[nbr].append(
+                        graphicLink.GraphicLink(
+                            [link[0], self.nodeAddressToGraphicNodeAddress[link[1]]],
+                            self.nodeList[nbr],
+                        )
                     )
-                )
-            nbr += 1
+                nbr += 1
+        else : print(error)
 
     def createBlankAutomate(self, numberOfLetter):
         alphabet = ["a", "b", "c"]
@@ -462,6 +465,79 @@ class Main:
             )
             pygame.display.flip()
             input("Press enter to continue")
+
+    def testConforme(self, fileName) :
+
+        file = open(fileName)
+        fileContent = file.read()
+        fileLines = fileContent.split('\n')
+
+        #Check alphabet
+        try : int(fileLines[0])
+        except : return "Ligne 1 : L'alphabet doit-être décrit avec un nombre de lettre !"
+        if int(fileLines[0]) < 1 or int(fileLines[0]) > 26 :
+            return "Ligne 1 : L'alphabet doit contenir un nombre de lettre entre 1 et 26 !"
+        
+        #Bon nombre de Lignes + nombre noeud int
+        nbrLine = 1
+        nbr = 1
+        nodeList = []
+        indexList = []
+        binNbr = -1
+        alphabet = "abcdefghijklmnopqrstuvwxyz"[:int(fileLines[0])]
+        
+        for i in range(5) :
+            try : nbrLine += int(fileLines[nbrLine])+1
+            except :
+                nbrLine = -1
+                return "Les quantités d'états doivent-être des chiffres !"
+            if i == 2 :
+                if not fileLines[nbrLine] in ["0", "1"] :
+                    return "Le chiffre indiquant la présence d'une poubelle doit-être un 0 ou un 1"
+                elif fileLines[nbrLine] == "1" :
+                    nbr += 2
+                    binNbr = int(fileLines[nbr])
+                    
+                #Récup des noeuds + nom des noeuds int
+            else :
+                nbr += 1
+                while nbr < nbrLine :
+                    try : fileLines[nbr]
+                    except : return "Quantités de noeuds mal renseignées !"
+                    try : nodeList.append(int(fileLines[nbr].split(";")[0]))
+                    except : return "Les noms des noeuds doivent-être des int !"
+                    indexList.append(nbr)
+                    nbr += 1
+
+        if nbrLine != len(fileLines) :
+            return "Quantités de noeuds mal renseignées !"
+        if binNbr != -1 and not binNbr in nodeList :
+            return "La poubelle ne fait référence à aucun noeud existant"
+        
+        #Check liaisons
+        for index in indexList :
+            if ";" in fileLines[index] :
+                fileLines[index] = fileLines[index].split(";")
+                fileLines[index][1] = fileLines[index][1].split(",")
+                for link in fileLines[index][1] :
+                    try : link[0]
+                    except : return f"Ligne {index+1} Il y a un ';' en trop !"
+                    if not link[0] in alphabet :
+                        return f"Ligne {index+1} Les lettres de liaisons doivent être dans l'alphabet !"
+                    try : link[1]
+                    except : return f"Ligne {index+1} La liaison est mal formulée !"
+                    if link[1] != "/" :
+                        return f"Ligne {index+1} Il manque un '/' dans la description d'une liaisons"
+                    try : int(link[2:])
+                    except : pass
+                    try : int(link[2:])
+                    except : return f"Ligne {index+1} Les destinations de liaisons doivent être des numéros !"
+                    if not int(link[2:]) in nodeList :
+                        return f"Ligne {index+1} Il y a un noeud de destination qui n'existe pas !"
+        
+        return "Un fichier aux petits onions, soyez fier de vous !"
+
+
 
     def run(self):
         pygame.mixer_music.play(-1)

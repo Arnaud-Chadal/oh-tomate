@@ -14,6 +14,7 @@ for line in file:
 alphabet = [fullAlphabet[i] for i in range(int(fileLines[0]))]
 allautos = [[], [], [], [], []]
 
+
 # EXTRACTION DES AUTOS DEPUIS LE FICHIER TXT
 counter = 0
 index = -1
