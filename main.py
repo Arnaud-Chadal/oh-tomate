@@ -4,8 +4,12 @@ import graphicWindow
 
 file = open("./automates/automateTest16.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
-
-fileLines = [line.rstrip() for line in file]
+fileLines=[]
+isAsynchronous=False
+for line in file:
+    fileLines.append(line.rstrip())
+    if (not isAsynchronous) and '&' in line:
+        isAsynchronous=True 
 
 alphabet = [fullAlphabet[i] for i in range(int(fileLines[0]))]
 allautos = [[], [], [], [], []]
@@ -57,6 +61,7 @@ for groupNumber in range(len(allautos)):
                     isAlreadyHere = True
                     n.setBin(True)
             if isAlreadyHere == False:
+                newNode.bin = True
                 nodeTab.append(newNode)
         if groupNumber == 4:
             nodeTab.append(newNode)
@@ -69,7 +74,7 @@ for group in allautos:
         for link in auto[1]:
             currentNode.addLinkToLinkList([link[0], automateNameToObject[link[1]]])
 
-firstauto = automate.Automate(alphabet, nodeTab)
+firstauto = automate.Automate(alphabet, nodeTab, isAsynchronous)
 print(firstauto)
 deterministe = firstauto.isDetermined()
 if deterministe:
@@ -82,29 +87,22 @@ print("\n=======================\n")
 # firstauto.toStandardize()
 # print(firstauto)
 # print("\n=======================\n")
-# deterministe = firstauto.isDetermined()
-# if deterministe:
-#     print("automate déterministe")
-# else:
-#     print("automate non déterministe")
+deterministe=firstauto.isDetermined()
+if deterministe:
+    print("automate déterministe")
+else:
+    print("automate non déterministe")
 
-# firstauto.toDetermine()
+firstauto.toDetermine()
+#print(firstauto)
+deterministe=firstauto.isDetermined()
+firstauto.toDetermine
 
-# deterministe=firstauto.isDetermined()
-# if deterministe:
-#     print("automate déterministe")
-# else:
-#     print("automate non déterministe")
-# print(firstauto)
-
-# # print("\n=======================\n")
-# # firstauto.toComplete()
-
-# # print(firstauto)
-# # print("\n=======================\n")
+if deterministe:
+    print("automate déterministe")
+else:
+    print("automate non déterministe")
 
 # firstauto.toMinimize()
 # print(firstauto)
 
-# print(firstauto.recognize("abababbbbb"))
-# print(firstauto.printTransitionTables())
