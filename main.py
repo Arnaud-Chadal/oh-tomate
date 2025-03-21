@@ -1,6 +1,7 @@
 import node
 import automate
 import graphicWindow
+import mainMenu
 
 file = open("./automates/automateTest35.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -81,7 +82,8 @@ if deterministe:
     print("automate déterministe")
 else:
     print("automate non déterministe")
-graphicWindow.Main(firstauto).run()
+mainMenu.Main().run()
+#graphicWindow.Main(firstauto).run()
 print("\n=======================\n")
 # print(firstauto.isStantard())
 # firstauto.toStandardize()

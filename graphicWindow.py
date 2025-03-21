@@ -12,7 +12,7 @@ import random
 
 
 class Main:
-    def __init__(self, automate) -> None:
+    def __init__(self, importMenu, musicOn) -> None:
         pygame.font.init()
         pygame.mixer.init()
         self.music = pygame.mixer_music.load("./src/music.mp3")
@@ -33,14 +33,17 @@ class Main:
             self.clocSound.append(
                 pygame.mixer.Sound("./src/cloc" + str(i + 1) + ".mp3")
             )
+        self.musicOn = musicOn
+        # self.sfxOn = sfxOn
+
         self.my_font = pygame.font.SysFont("Comic Sans MS", 30)
         self.playingSound = False
         self.screen = pygame.display.set_mode((1920, 1080))
         self.image = pygame.image.load("./images/verySeriousImage.jpg").convert_alpha()
         self.image = pygame.transform.scale(self.image, (756, 1008))
         self.running = True
-        self.automate = automate
-        self.alphabet = automate.alphabet
+        self.createBlankAutomate(3)
+        self.alphabet = self.automate.alphabet
         self.nodeAddressToGraphicNodeAddress = {}
         self.graphicNodeToNodeAddress = {}
         self.nodeList = []
@@ -48,7 +51,7 @@ class Main:
         self.clicked = None
         self.grabbed = None
         self.dragLink = None
-        self.openImportMenu = 0
+        self.openImportMenu = importMenu
         self.menuX = 0
         self.menuY = 1080
         self.importMenuX = 0
@@ -89,14 +92,14 @@ class Main:
         self.countDownSelectState = 0
         self.xMousePos, self.yMousePos = pygame.mouse.get_pos()
         nbr = 0
-        for graphNode in automate.nodeList:
+        for graphNode in self.automate.nodeList:
             graphicNo = graphicNode.GraphicNode(nbr * 200, 50 * nbr, graphNode)
             self.nodeList.append(graphicNo)
             self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
             self.graphicNodeToNodeAddress[graphicNo] = graphNode
             nbr += 1
         nbr = 0
-        for graphNode in automate.nodeList:
+        for graphNode in self.automate.nodeList:
             self.linkList.append([])
             for link in graphNode.linkList:
                 self.linkList[nbr].append(
@@ -466,6 +469,7 @@ class Main:
     def run(self):
         pygame.mixer_music.play(-1)
         while self.running:
+            pygame.mixer_music.set_volume(0.7*self.musicOn)
             self.screen.fill((50, 50, 50))
             # Check des events
 
