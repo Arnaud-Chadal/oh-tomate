@@ -261,7 +261,7 @@ class Automate:
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
 
     def toMinimize(self):
-        if not self.isComplet:
+        if not self.isComplet():
             return False
         partition = [[], []]
         newPartition = [[], []]
@@ -347,7 +347,7 @@ class Automate:
         return True
 
     def toComplete(self):
-        if not self.isDetermined:
+        if not self.isDetermined():
             return False
         varBin = 0
         for nodeVar in self.nodeList:
@@ -375,7 +375,7 @@ class Automate:
         return True
 
     def toComplement(self):
-        if not self.isComplet:
+        if not self.isComplet():
             return False
         for nodeVar in self.nodeList:
             nodeVar.isLast = not nodeVar.isLast
