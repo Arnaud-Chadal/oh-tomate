@@ -83,7 +83,6 @@ if deterministe:
 else:
     print("automate non déterministe")
 mainMenu.Main().run()
-#graphicWindow.Main(firstauto).run()
 print("\n=======================\n")
 # print(firstauto.isStantard())
 # firstauto.toStandardize()

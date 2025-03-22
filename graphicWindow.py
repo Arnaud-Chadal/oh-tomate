@@ -12,7 +12,7 @@ import random
 
 
 class Main:
-    def __init__(self, importMenu, musicOn) -> None:
+    def __init__(self, importMenu, musicOn, sfxOn) -> None:
         pygame.font.init()
         pygame.mixer.init()
         self.music = pygame.mixer_music.load("./src/music.mp3")
@@ -34,7 +34,7 @@ class Main:
                 pygame.mixer.Sound("./src/cloc" + str(i + 1) + ".mp3")
             )
         self.musicOn = musicOn
-        # self.sfxOn = sfxOn
+        self.sfxOn = sfxOn
 
         self.my_font = pygame.font.SysFont("Comic Sans MS", 30)
         self.playingSound = False
@@ -125,13 +125,13 @@ class Main:
         ):
             if self.transitionMenuX > 1320:
                 self.transitionMenuX -= 40
-                if not self.playingSound:
+                if not self.playingSound and self.sfxOn:
                     self.shii.play()
                     self.playingSound = True
         else:
             if self.transitionMenuX < 1920:
                 self.transitionMenuX += 40
-                if not self.playingSound:
+                if not self.playingSound and self.sfxOn:
                     self.wouu.play()
                     self.playingSound = True
         if (
@@ -175,7 +175,7 @@ class Main:
             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
         ):
             self.screen.blit(self.image, (300, 0))
-            if not pygame.mixer.Channel(0).get_busy():
+            if not pygame.mixer.Channel(0).get_busy() and self.sfxOn :
                 pygame.mixer.Channel(0).play(self.sarkozyChatSound)
         else:
             self.sarkozyChatSound.stop()
@@ -186,13 +186,13 @@ class Main:
         ):
             if self.menuY > 880:
                 self.menuY -= 40
-                if not self.playingSound:
+                if not self.playingSound and self.sfxOn:
                     self.shii.play()
                     self.playingSound = True
         else:
             if self.menuY < 1080:
                 self.menuY += 40
-                if not self.playingSound:
+                if not self.playingSound and self.sfxOn:
                     self.wouu.play()
                     self.playingSound = True
         if (
@@ -361,7 +361,8 @@ class Main:
         self.buttonDown.drawButton(self.screen, "Down")
         self.buttonClose.drawButton(self.screen, "Close")
         self.buttonNewBlank.drawButton(self.screen, "Create blank")
-        self.exportButton.drawButton(self.screen, "Export")
+        if len(self.automate.nodeList) > 0:
+            self.exportButton.drawButton(self.screen, "Export")
 
         space = 0
         for b in self.buttonImportTab[self.importMenuX : self.importMenuY]:
@@ -483,7 +484,8 @@ class Main:
                             if graphNode.collision.collidepoint(event.pos):
                                 self.grabbed = graphNode
                                 self.clicked = graphNode
-                                self.clocSound[random.randint(0, 8)].play()
+                                if self.sfxOn :
+                                    self.clocSound[random.randint(0, 8)].play()
                         for groups in self.linkList:
                             for link in groups:
                                 link.isClicked = False
@@ -500,8 +502,9 @@ class Main:
                         if self.determineButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.determinisationSound.stop()
-                            self.determinisationSound.play()
+                            if self.sfxOn :
+                                self.determinisationSound.stop()
+                                self.determinisationSound.play()
                             self.automate.toDetermine()
                             self.nodeAddressToGraphicNodeAddress = {}
                             self.graphicNodeToNodeAddress = {}
@@ -537,8 +540,9 @@ class Main:
                         elif self.minimButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.minimisationSoud.stop()
-                            self.minimisationSoud.play()
+                            if self.sfxOn :
+                                self.minimisationSoud.stop()
+                                self.minimisationSoud.play()
                             self.automate.toMinimize()
                             self.nodeAddressToGraphicNodeAddress = {}
                             self.graphicNodeToNodeAddress = {}
@@ -575,8 +579,9 @@ class Main:
                         elif self.standaButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.standardisationSound.stop()
-                            self.standardisationSound.play()
+                            if self.sfxOn :
+                                self.standardisationSound.stop()
+                                self.standardisationSound.play()
                             self.automate.toStandardize()
                             self.nodeAddressToGraphicNodeAddress = {}
                             self.graphicNodeToNodeAddress = {}
@@ -612,8 +617,9 @@ class Main:
                         elif self.completeButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.completionSound.stop()
-                            self.completionSound.play()
+                            if self.sfxOn :
+                                self.completionSound.stop()
+                                self.completionSound.play()
                             self.automate.toComplete()
                             self.nodeAddressToGraphicNodeAddress = {}
                             self.graphicNodeToNodeAddress = {}
@@ -649,8 +655,9 @@ class Main:
                         elif self.complementButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.complementationSoud.stop()
-                            self.complementationSoud.play()
+                            if self.sfxOn :
+                                self.complementationSoud.stop()
+                                self.complementationSoud.play()
                             self.automate.toComplement()
                             self.nodeAddressToGraphicNodeAddress = {}
                             self.graphicNodeToNodeAddress = {}
@@ -686,14 +693,16 @@ class Main:
                         elif self.importExportButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.importExportSound.stop()
-                            self.importExportSound.play()
+                            if self.sfxOn :
+                                self.importExportSound.stop()
+                                self.importExportSound.play()
                             self.openImportMenu = True
                         elif self.checkWordButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.checkWordSound.stop()
-                            self.checkWordSound.play()
+                            if self.sfxOn :
+                                self.checkWordSound.stop()
+                                self.checkWordSound.play()
                             self.checkWord()
                     elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                         self.clicked = self.grabbed
