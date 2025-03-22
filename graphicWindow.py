@@ -537,6 +537,10 @@ class Main:
                                     link.isClicked = True
                                     self.clicked = link
                                     self.grabbed = link
+                        if self.quitButton.rect.collidepoint(
+                            pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                        ):
+                            self.running = False
                         if self.determineButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
