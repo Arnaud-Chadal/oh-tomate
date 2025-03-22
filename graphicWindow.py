@@ -28,6 +28,7 @@ class Main:
         self.completionSound = pygame.mixer.Sound("./src/completion.mp3")
         self.importExportSound = pygame.mixer.Sound("./src/importExport.mp3")
         self.checkWordSound = pygame.mixer.Sound("./src/checkWord.mp3")
+        self.popUps = []
         self.clocSound = []
         for i in range(9):
             self.clocSound.append(
@@ -63,6 +64,7 @@ class Main:
         self.importMenuY = 6
         self.transitionMenuX = 1920
         self.transitionMenuY = 0
+        self.quitButton = button.Button(20, 20, 100, 70)
         self.determineButton = button.Button(
             self.menuX + 70, self.menuY + 100 - 30, 200, 80
         )
@@ -125,6 +127,28 @@ class Main:
                     if graphicNo.nodeVar.name == name:
                         graphicNo.x = graphicNo.collision.x = posX
                         graphicNo.y = graphicNo.collision.y = posY
+
+    def addPopup(self, text):
+        self.popUps.append(
+            [
+                self.my_font.render(text, 1, (255, 255, 255)).convert_alpha(),
+                200,
+            ]
+        )
+
+    def drawPopup(self):
+        i = 0
+        while i < len(self.popUps):
+            if self.popUps[i][1] > 0:
+                self.screen.blit(
+                    self.popUps[i][0],
+                    (800, 30 + (50 * i)),
+                )
+                self.popUps[i][1] -= 2
+                self.popUps[i][0].set_alpha(self.popUps[i][1])
+                i += 1
+            else:
+                self.popUps.remove(self.popUps[i])
 
     def drawTransitionMenu(self):
         my_font = pygame.font.SysFont("Comic Sans MS", 15)
@@ -499,6 +523,7 @@ class Main:
                                 self.grabbed = graphNode
                                 self.clicked = graphNode
                                 self.clocSound[random.randint(0, 8)].play()
+                                self.addPopup("Clicked a node")
                         for groups in self.linkList:
                             for link in groups:
                                 link.isClicked = False
@@ -1041,6 +1066,8 @@ class Main:
 
                 self.drawMenu()
                 self.drawTransitionMenu()
+                self.drawPopup()
+                self.quitButton.drawButton(self.screen, "Quit")
 
             else:
 
