@@ -397,7 +397,7 @@ class Automate:
                 self.nodeList[nodeIndex].isInit = False
         self.nodeList.insert(0, newNode)
 
-    def saveToFile(self, fileName):
+    def saveToFile(self, fileName, graphicNodeTab):
         numberOfInitialStates = 0
         numberOfFinalStates = 0
         numberOfInitialAndFinalStates = 0
@@ -411,10 +411,12 @@ class Automate:
                 numberOfFinalStates += 1
             if node.bin:
                 thereIsABin = True
-        if ".txt" not in fileName:
+        if len(fileName) > 5 and fileName[len(fileName) - 4 :] == ".txt":
+            filePath = "./automates/" + fileName
+            dataPath = "./automates/" + fileName[: len(fileName) - 4] + ".data"
+        else:
             filePath = "./automates/" + fileName + ".txt"
-        if os.path.exists(filePath):
-            return False
+            dataPath = "./automates/" + fileName + ".data"
         file = open(filePath, "w")
         file.write(str(len(self.alphabet)) + "\n")
         file.write(str(numberOfInitialStates) + "\n")
@@ -479,6 +481,17 @@ class Automate:
                     line = line.rstrip(",")
                     file.write(line + "\n")
         file.close()
+        dataFile = open(dataPath, "w")
+        for graphicNode in graphicNodeTab:
+            dataFile.write(
+                str(graphicNode.nodeVar.name)
+                + "("
+                + str(graphicNode.x)
+                + ","
+                + str(graphicNode.y)
+                + ")\n"
+            )
+        dataFile.close()
 
     def recognize(self, word: str) -> bool:
         if not self.isDetermined():

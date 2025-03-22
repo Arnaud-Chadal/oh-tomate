@@ -5,7 +5,7 @@ import node
 import button
 import automate
 from math import pi, cos, sin
-import time
+import os
 import gc
 import pygame.mixer_music
 import random
@@ -114,6 +114,17 @@ class Main:
                     )
                 )
             nbr += 1
+        if os.path.isfile("./automates/textAutomateAlexis.data"):
+            dataFile = open("./automates/textAutomateAlexis.data", "r")
+            for line in dataFile:
+                name = line.rstrip().split("(")[0]
+                posX = int(line.rstrip().split("(")[1].split(",")[0])
+                posY = line.rstrip().split("(")[1].split(",")[1]
+                posY = int(posY.replace(")", ""))
+                for graphicNo in self.nodeList:
+                    if graphicNo.nodeVar.name == name:
+                        graphicNo.x = graphicNo.collision.x = posX
+                        graphicNo.y = graphicNo.collision.y = posY
 
     def drawTransitionMenu(self):
         my_font = pygame.font.SysFont("Comic Sans MS", 15)
@@ -1065,7 +1076,9 @@ class Main:
                         elif self.exportButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.automate.saveToFile("textAutomateAlexis")
+                            self.automate.saveToFile(
+                                "textAutomateAlexis.txt", self.nodeList
+                            )
                         else:
                             for button in self.buttonImportTab:
                                 if button.rect.collidepoint(
