@@ -45,6 +45,14 @@ class Main:
         self.graphicNodeToNodeAddress = {}
         self.nodeList = []
         self.linkList = []
+        self.drawColor = [
+            (255, 0, 0),
+            (0, 255, 0),
+            (0, 0, 255),
+            (255, 0, 255),
+            (255, 255, 0),
+        ] * 5
+        self.drawColor.append((255, 0, 0))
         self.clicked = None
         self.grabbed = None
         self.dragLink = None
@@ -793,7 +801,18 @@ class Main:
 
                 for linkGroup in self.linkList:
                     for links in linkGroup:
-                        links.draw(self.screen, rectArrowDrawed)
+                        if links.linkVar[0] == "&":
+                            links.draw(
+                                self.screen,
+                                rectArrowDrawed,
+                                (0, 255, 255),
+                            )
+                        else:
+                            links.draw(
+                                self.screen,
+                                rectArrowDrawed,
+                                self.drawColor[self.alphabet.index(links.linkVar[0])],
+                            )
                         rectArrowDrawed.append(links.collision)
                         if keys[pygame.K_DELETE] and self.clicked == links:
                             linkGroup.remove(links)
