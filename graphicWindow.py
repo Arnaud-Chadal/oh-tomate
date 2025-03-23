@@ -12,7 +12,7 @@ import random
 
 
 class Main:
-    def __init__(self, automate) -> None:
+    def __init__(self, importMenu, musicOn, sfxOn) -> None:
         pygame.font.init()
         pygame.mixer.init()
         self.music = pygame.mixer_music.load("./src/music.mp3")
@@ -34,14 +34,17 @@ class Main:
             self.clocSound.append(
                 pygame.mixer.Sound("./src/cloc" + str(i + 1) + ".mp3")
             )
+        self.musicOn = musicOn
+        self.sfxOn = sfxOn
+
         self.my_font = pygame.font.SysFont("Comic Sans MS", 30)
         self.playingSound = False
         self.screen = pygame.display.set_mode((1920, 1080))
         self.image = pygame.image.load("./images/verySeriousImage.jpg").convert_alpha()
         self.image = pygame.transform.scale(self.image, (756, 1008))
         self.running = True
-        self.automate = automate
-        self.alphabet = automate.alphabet
+        self.createBlankAutomate(3)
+        self.alphabet = self.automate.alphabet
         self.nodeAddressToGraphicNodeAddress = {}
         self.graphicNodeToNodeAddress = {}
         self.nodeList = []
@@ -57,7 +60,7 @@ class Main:
         self.clicked = None
         self.grabbed = None
         self.dragLink = None
-        self.openImportMenu = 0
+        self.openImportMenu = importMenu
         self.menuX = 0
         self.menuY = 1080
         self.importMenuX = 0
@@ -99,14 +102,14 @@ class Main:
         self.countDownSelectState = 0
         self.xMousePos, self.yMousePos = pygame.mouse.get_pos()
         nbr = 0
-        for graphNode in automate.nodeList:
+        for graphNode in self.automate.nodeList:
             graphicNo = graphicNode.GraphicNode(nbr * 200, 50 * nbr, graphNode)
             self.nodeList.append(graphicNo)
             self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
             self.graphicNodeToNodeAddress[graphicNo] = graphNode
             nbr += 1
         nbr = 0
-        for graphNode in automate.nodeList:
+        for graphNode in self.automate.nodeList:
             self.linkList.append([])
             for link in graphNode.linkList:
                 self.linkList[nbr].append(
@@ -165,13 +168,13 @@ class Main:
         ):
             if self.transitionMenuX > 1320:
                 self.transitionMenuX -= 40
-                if not self.playingSound:
+                if not self.playingSound and self.sfxOn:
                     self.shii.play()
                     self.playingSound = True
         else:
             if self.transitionMenuX < 1920:
                 self.transitionMenuX += 40
-                if not self.playingSound:
+                if not self.playingSound and self.sfxOn:
                     self.wouu.play()
                     self.playingSound = True
         if (
@@ -215,7 +218,7 @@ class Main:
             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
         ):
             self.screen.blit(self.image, (300, 0))
-            if not pygame.mixer.Channel(0).get_busy():
+            if not pygame.mixer.Channel(0).get_busy() and self.sfxOn :
                 pygame.mixer.Channel(0).play(self.sarkozyChatSound)
         else:
             self.sarkozyChatSound.stop()
@@ -226,13 +229,13 @@ class Main:
         ):
             if self.menuY > 880:
                 self.menuY -= 40
-                if not self.playingSound:
+                if not self.playingSound and self.sfxOn:
                     self.shii.play()
                     self.playingSound = True
         else:
             if self.menuY < 1080:
                 self.menuY += 40
-                if not self.playingSound:
+                if not self.playingSound and self.sfxOn:
                     self.wouu.play()
                     self.playingSound = True
         if (
@@ -402,7 +405,8 @@ class Main:
         self.buttonDown.drawButton(self.screen, "Down")
         self.buttonClose.drawButton(self.screen, "Close")
         self.buttonNewBlank.drawButton(self.screen, "Create blank")
-        self.exportButton.drawButton(self.screen, "Export")
+        if len(self.automate.nodeList) > 0:
+            self.exportButton.drawButton(self.screen, "Export")
 
         space = 0
         for b in self.buttonImportTab[self.importMenuX : self.importMenuY]:
@@ -565,6 +569,7 @@ class Main:
     def run(self):
         pygame.mixer_music.play(-1)
         while self.running:
+            pygame.mixer_music.set_volume(0.7*self.musicOn)
             self.screen.fill((50, 50, 50))
             # Check des events
 
@@ -578,8 +583,9 @@ class Main:
                             if graphNode.collision.collidepoint(event.pos):
                                 self.grabbed = graphNode
                                 self.clicked = graphNode
-                                self.clocSound[random.randint(0, 8)].play()
                                 self.addPopup("Clicked a node")
+                                if self.sfxOn :
+                                    self.clocSound[random.randint(0, 8)].play()
                         for groups in self.linkList:
                             for link in groups:
                                 link.isClicked = False
@@ -600,8 +606,9 @@ class Main:
                         if self.determineButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.determinisationSound.stop()
-                            self.determinisationSound.play()
+                            if self.sfxOn :
+                                self.determinisationSound.stop()
+                                self.determinisationSound.play()
                             self.automate.toDetermine()
                             self.nodeAddressToGraphicNodeAddress = {}
                             self.graphicNodeToNodeAddress = {}
@@ -638,8 +645,9 @@ class Main:
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
                             if self.automate.toMinimize():
-                                self.minimisationSoud.stop()
-                                self.minimisationSoud.play()
+                                if self.sfxOn :
+                                    self.minimisationSoud.stop()
+                                    self.minimisationSoud.play()
                                 self.nodeAddressToGraphicNodeAddress = {}
                                 self.graphicNodeToNodeAddress = {}
                                 self.nodeList = []
@@ -679,8 +687,9 @@ class Main:
                         elif self.standaButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.standardisationSound.stop()
-                            self.standardisationSound.play()
+                            if self.sfxOn :
+                                self.standardisationSound.stop()
+                                self.standardisationSound.play()
                             self.automate.toStandardize()
                             self.nodeAddressToGraphicNodeAddress = {}
                             self.graphicNodeToNodeAddress = {}
@@ -717,8 +726,9 @@ class Main:
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
                             if self.automate.toComplete():
-                                self.completionSound.stop()
-                                self.completionSound.play()
+                                if self.sfxOn :
+                                    self.completionSound.stop()
+                                    self.completionSound.play()
                                 self.nodeAddressToGraphicNodeAddress = {}
                                 self.graphicNodeToNodeAddress = {}
                                 self.nodeList = []
@@ -756,8 +766,9 @@ class Main:
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
                             if self.automate.toComplement():
-                                self.complementationSoud.stop()
-                                self.complementationSoud.play()
+                                if self.sfxOn :                                                    
+                                  self.complementationSoud.stop()
+                                  self.complementationSoud.play()
                                 self.nodeAddressToGraphicNodeAddress = {}
                                 self.graphicNodeToNodeAddress = {}
                                 self.nodeList = []
@@ -796,14 +807,16 @@ class Main:
                         elif self.importExportButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.importExportSound.stop()
-                            self.importExportSound.play()
+                            if self.sfxOn :
+                                self.importExportSound.stop()
+                                self.importExportSound.play()
                             self.openImportMenu = True
                         elif self.checkWordButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.checkWordSound.stop()
-                            self.checkWordSound.play()
+                            if self.sfxOn :
+                                self.checkWordSound.stop()
+                                self.checkWordSound.play()
                             self.checkWord()
                     elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                         self.clicked = self.grabbed
