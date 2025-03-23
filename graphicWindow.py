@@ -521,101 +521,11 @@ class Main:
             space += 1
 
     def checkWord(self):
-        self.screen.fill((50, 50, 50))
-        bigFont = pygame.font.SysFont("Comic Sans MS", 120)
-        bigTextWaitingFullScreen = bigFont.render(
-            "Waiting for input...", 0, (255, 255, 255)
-        )
-        bigTextPleaseAnswerConsoleFullScreen = bigFont.render(
-            "Write a word in the terminal", 0, (255, 255, 255)
-        )
-        bigTextPleaseAnswerConsoleFullScreenNext = bigFont.render(
-            "then press enter !", 0, (255, 255, 255)
-        )
-        self.screen.blit(
-            bigTextWaitingFullScreen, (0, 0), bigTextWaitingFullScreen.get_rect()
-        )
-        self.screen.blit(
-            bigTextPleaseAnswerConsoleFullScreen,
-            (0, bigTextWaitingFullScreen.get_rect().height + 50),
-            bigTextPleaseAnswerConsoleFullScreen.get_rect(),
-        )
-        self.screen.blit(
-            bigTextPleaseAnswerConsoleFullScreenNext,
-            (
-                0,
-                bigTextPleaseAnswerConsoleFullScreen.get_rect().height
-                + 20
-                + bigTextWaitingFullScreen.get_rect().height,
-            ),
-            bigTextPleaseAnswerConsoleFullScreenNext.get_rect(),
-        )
-        pygame.display.flip()
-        textInput = input("Saisir le texte : ")
+        textInput = self.textInput("Write a word to be recognize")
         if self.automate.recognize(textInput):
-            self.screen.fill((50, 50, 50))
-            bigFont = pygame.font.SysFont("Comic Sans MS", 120)
-            bigTextWaitingFullScreen = bigFont.render(
-                "The word " + textInput, 0, (255, 255, 255)
-            )
-            bigTextPleaseAnswerConsoleFullScreen = bigFont.render(
-                "IS recognized !!! Congrats", 0, (255, 255, 255)
-            )
-            bigTextPleaseAnswerConsoleFullScreenNext = bigFont.render(
-                "Continue in the terminal", 0, (255, 255, 255)
-            )
-            self.screen.blit(
-                bigTextWaitingFullScreen, (0, 0), bigTextWaitingFullScreen.get_rect()
-            )
-            self.screen.blit(
-                bigTextPleaseAnswerConsoleFullScreen,
-                (0, bigTextWaitingFullScreen.get_rect().height + 50),
-                bigTextPleaseAnswerConsoleFullScreen.get_rect(),
-            )
-            self.screen.blit(
-                bigTextPleaseAnswerConsoleFullScreenNext,
-                (
-                    0,
-                    bigTextPleaseAnswerConsoleFullScreen.get_rect().height
-                    + 20
-                    + bigTextWaitingFullScreen.get_rect().height,
-                ),
-                bigTextPleaseAnswerConsoleFullScreenNext.get_rect(),
-            )
-            pygame.display.flip()
-            input("Press enter to continue")
+            self.textInput("The word IS RECOGNIZE !! Press enter to continue")
         else:
-            self.screen.fill((50, 50, 50))
-            bigFont = pygame.font.SysFont("Comic Sans MS", 120)
-            bigTextWaitingFullScreen = bigFont.render(
-                "The word " + textInput, 0, (255, 255, 255)
-            )
-            bigTextPleaseAnswerConsoleFullScreen = bigFont.render(
-                "is NOT recognized....", 0, (255, 255, 255)
-            )
-            bigTextPleaseAnswerConsoleFullScreenNext = bigFont.render(
-                "Continue in the terminal", 0, (255, 255, 255)
-            )
-            self.screen.blit(
-                bigTextWaitingFullScreen, (0, 0), bigTextWaitingFullScreen.get_rect()
-            )
-            self.screen.blit(
-                bigTextPleaseAnswerConsoleFullScreen,
-                (0, bigTextWaitingFullScreen.get_rect().height + 50),
-                bigTextPleaseAnswerConsoleFullScreen.get_rect(),
-            )
-            self.screen.blit(
-                bigTextPleaseAnswerConsoleFullScreenNext,
-                (
-                    0,
-                    bigTextPleaseAnswerConsoleFullScreen.get_rect().height
-                    + 20
-                    + bigTextWaitingFullScreen.get_rect().height,
-                ),
-                bigTextPleaseAnswerConsoleFullScreenNext.get_rect(),
-            )
-            pygame.display.flip()
-            input("Press enter to continue")
+            self.textInput("The word is NOT recognize..... Press enter to continue")
 
     def textInput(self, message):
         messageSurface = self.my_font.render(message, 1, (255, 255, 255))
