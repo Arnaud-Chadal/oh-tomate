@@ -3,7 +3,7 @@ import automate
 import graphicWindow
 import mainMenu
 
-file = open("./automates/automateTest35.txt", "r")
+file = open("./automates/textAutomateAlexis.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
 fileLines = []
 isAsynchronous = False
