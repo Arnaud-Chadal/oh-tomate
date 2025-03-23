@@ -45,7 +45,7 @@ class Main:
                 True,
                 (255, 255, 255),
             ),
-            self.my_font.render("LM's Quote", True, (255, 255, 255)),
+            self.my_font.render("Que la farce soit avec vous - Louis-Marie", True, (255, 255, 255)),
             self.my_font.render("C'est moi wesh ! - Mathis", True, (255, 255, 255)),
             self.my_font.render(
                 "J'ai une toute dernière question... - Alexis", True, (255, 255, 255)
