@@ -169,16 +169,20 @@ class Main:
 
                                 case 2:
                                     self.running = False
-                                    graphicWindow.Main(
+                                    window = graphicWindow.Main(
                                         False, self.toggleMusic, self.toggleSfx
-                                    ).run()
+                                    )
+                                    window.createBlankAutomate()
+                                    window.run()
                                     break
 
                                 case 3:
                                     self.running = False
-                                    graphicWindow.Main(
+                                    window = graphicWindow.Main(
                                         True, self.toggleMusic, self.toggleSfx
-                                    ).run()
+                                    )
+                                    window.importMenu()
+                                    window.run()
                                     break
                                 case 4:
                                     self.running = False

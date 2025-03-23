@@ -44,8 +44,7 @@ class Main:
         self.image = pygame.transform.scale(self.image, (756, 1008))
         self.running = True
         self.clock = pygame.time.Clock()
-        self.createBlankAutomate()
-        self.alphabet = self.automate.alphabet
+        self.alphabet = []
         self.nodeAddressToGraphicNodeAddress = {}
         self.graphicNodeToNodeAddress = {}
         self.nodeList = []
@@ -101,35 +100,7 @@ class Main:
         self.countDownSelectLetter = 0
         self.countDownSelectState = 0
         self.xMousePos, self.yMousePos = pygame.mouse.get_pos()
-        nbr = 0
-        for graphNode in self.automate.nodeList:
-            graphicNo = graphicNode.GraphicNode(nbr * 200, 50 * nbr, graphNode)
-            self.nodeList.append(graphicNo)
-            self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
-            self.graphicNodeToNodeAddress[graphicNo] = graphNode
-            nbr += 1
-        nbr = 0
-        for graphNode in self.automate.nodeList:
-            self.linkList.append([])
-            for link in graphNode.linkList:
-                self.linkList[nbr].append(
-                    graphicLink.GraphicLink(
-                        [link[0], self.nodeAddressToGraphicNodeAddress[link[1]]],
-                        self.nodeList[nbr],
-                    )
-                )
-            nbr += 1
-        if os.path.isfile("./automates/textAutomateAlexis.data"):
-            dataFile = open("./automates/textAutomateAlexis.data", "r")
-            for line in dataFile:
-                name = line.rstrip().split("(")[0]
-                posX = int(line.rstrip().split("(")[1].split(",")[0])
-                posY = line.rstrip().split("(")[1].split(",")[1]
-                posY = int(posY.replace(")", ""))
-                for graphicNo in self.nodeList:
-                    if graphicNo.nodeVar.name == name:
-                        graphicNo.x = graphicNo.collision.x = posX
-                        graphicNo.y = graphicNo.collision.y = posY
+        self.automate = automate.Automate("", [], False)
 
     def addPopup(self, text):
         self.popUps.append(
@@ -1297,7 +1268,7 @@ class Main:
                             self.buttonDown.rect.collidepoint(
                                 pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                             )
-                            and self.importMenuX < 0
+                            and self.importMenuX > 0
                         ):
                             self.importMenuY -= 1
                             self.importMenuX -= 1
@@ -1305,7 +1276,7 @@ class Main:
                             self.buttonUp.rect.collidepoint(
                                 pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                             )
-                            and self.importMenuY > 44
+                            and self.importMenuY < 44
                         ):
                             self.importMenuY += 1
                             self.importMenuX += 1
