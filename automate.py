@@ -126,8 +126,6 @@ class Automate:
             while linkFromClosureToProcess:
 
                 for linkToProcess in linkFromClosureToProcess[0].linkList:
-                    # print('ici:',linkToProcess[1].name)
-                    # print(linkToProcess[0])
                     if (not newIsInit) and (linkToProcess[1].isInit):
                         newIsInit = 1
                     if (not newIsLast) and (linkToProcess[1].isLast):
@@ -135,11 +133,9 @@ class Automate:
                     if linkToProcess[0] == "&" and (
                         linkToProcess[1].name not in newName
                     ):
-                        # print("ici &")
                         newName.add(linkToProcess[1].name)
                         linkFromClosureToProcess.append(linkToProcess[1])
                     if linkToProcess[0] in self.alphabet:
-                        # print("ici alpha")
                         newLink.append([linkToProcess[0], linkToProcess[1]])
                 del linkFromClosureToProcess[0]
             newNames[ele.name] = newName
@@ -163,7 +159,6 @@ class Automate:
                 self.nodeLastList.append(n)
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
         self.isAsynchronous = 0
-        print(self)
 
     def toDetermine(self):
 
@@ -296,7 +291,6 @@ class Automate:
                     currentPartition.append([node])
                     newPartition[groupNum].remove(node)
                     transitionNode = transition[node]
-                    print(transitionNode)
                     indexMax = len(newPartition[groupNum])
                     currentIndex = 0
                     while currentIndex < indexMax:
@@ -319,7 +313,6 @@ class Automate:
         for newStateNumber in range(len(partition)):
             for i in range(len(partition[newStateNumber])):
                 partition[newStateNumber][i] = partition[newStateNumber][i].getName()
-        print(partition)
         self.backupNodeList[3] = partition
         newNode = []
         newNodeDico = {}
@@ -357,7 +350,6 @@ class Automate:
             varBin = node.Node("Bin", 0, 0)
             varBin.bin = True
             self.nodeList.append(varBin)
-            print(self.backupNodeList)
             if self.backupNodeList[1] == []:
                 self.backupNodeList[2] = self.backupNodeList[0].copy()
             else:
@@ -423,7 +415,9 @@ class Automate:
         if numberOfInitialStates > 0:
             for node in self.nodeList:
                 if node.isInit and not node.isLast:
-                    line = node.getName() + ";"
+                    line = node.getName()
+                    if len(node.linkList) != 0:
+                        line += ";"
                     for link in node.linkList:
                         line += link[0] + "/" + link[1].getName() + ","
                     line = line.rstrip(",")
@@ -432,7 +426,9 @@ class Automate:
         if numberOfFinalStates > 0:
             for node in self.nodeList:
                 if node.isLast and not node.isInit:
-                    line = node.getName() + ";"
+                    line = node.getName()
+                    if len(node.linkList) != 0:
+                        line += ";"
                     for link in node.linkList:
                         line += link[0] + "/" + link[1].getName() + ","
                     line = line.rstrip(",")
@@ -441,7 +437,9 @@ class Automate:
         if numberOfInitialAndFinalStates > 0:
             for node in self.nodeList:
                 if node.isInit and node.isLast:
-                    line = node.getName() + ";"
+                    line = node.getName()
+                    if len(node.linkList) != 0:
+                        line += ";"
                     for link in node.linkList:
                         line += link[0] + "/" + link[1].getName() + ","
                     line = line.rstrip(",")
@@ -450,7 +448,9 @@ class Automate:
         if thereIsABin:
             for node in self.nodeList:
                 if node.bin:
-                    line = node.getName() + ";"
+                    line = node.getName()
+                    if len(node.linkList) != 0:
+                        line += ";"
                     for link in node.linkList:
                         line += link[0] + "/" + link[1].getName() + ","
                     line = line.rstrip(",")
@@ -475,7 +475,9 @@ class Automate:
         ):
             for node in self.nodeList:
                 if not node.isInit and not node.isLast and not node.bin:
-                    line = node.getName() + ";"
+                    line = node.getName()
+                    if len(node.linkList) != 0:
+                        line += ";"
                     for link in node.linkList:
                         line += link[0] + "/" + link[1].getName() + ","
                     line = line.rstrip(",")
@@ -498,7 +500,6 @@ class Automate:
             self.toDetermine()
         for c in word:
             if c not in self.alphabet:
-                print("Not same alphabet")
                 return False
         wordCopy = word
         node = self.nodeInitList[0]

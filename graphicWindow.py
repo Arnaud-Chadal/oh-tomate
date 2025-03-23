@@ -4,11 +4,11 @@ import graphicLink
 import node
 import button
 import automate
-from math import pi, cos, sin
 import os
 import gc
 import pygame.mixer_music
 import random
+import main
 
 
 class Main:
@@ -43,7 +43,8 @@ class Main:
         self.image = pygame.image.load("./images/verySeriousImage.jpg").convert_alpha()
         self.image = pygame.transform.scale(self.image, (756, 1008))
         self.running = True
-        self.createBlankAutomate(3)
+        self.clock = pygame.time.Clock()
+        self.createBlankAutomate()
         self.alphabet = self.automate.alphabet
         self.nodeAddressToGraphicNodeAddress = {}
         self.graphicNodeToNodeAddress = {}
@@ -67,7 +68,7 @@ class Main:
         self.importMenuY = 6
         self.transitionMenuX = 1920
         self.transitionMenuY = 0
-        self.quitButton = button.Button(20, 20, 100, 70)
+        self.quitButton = button.Button(1700, 20, 100, 70)
         self.determineButton = button.Button(
             self.menuX + 70, self.menuY + 100 - 30, 200, 80
         )
@@ -97,7 +98,6 @@ class Main:
         self.buttonClose = button.Button(20, 20, 100, 100)
         self.buttonNewBlank = button.Button(1650, 20, 250, 100)
         self.exportButton = button.Button(1650, 960, 250, 100)
-        self.clock = pygame.time.Clock()
         self.countDownSelectLetter = 0
         self.countDownSelectState = 0
         self.xMousePos, self.yMousePos = pygame.mouse.get_pos()
@@ -218,7 +218,7 @@ class Main:
             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
         ):
             self.screen.blit(self.image, (300, 0))
-            if not pygame.mixer.Channel(0).get_busy() and self.sfxOn :
+            if not pygame.mixer.Channel(0).get_busy() and self.sfxOn:
                 pygame.mixer.Channel(0).play(self.sarkozyChatSound)
         else:
             self.sarkozyChatSound.stop()
@@ -385,8 +385,143 @@ class Main:
                     )
                 )
             nbr += 1
+        if os.path.isfile("./automates/" + str(fileNumber) + ".data"):
+            dataFile = open("./automates/" + str(fileNumber) + ".data", "r")
+            for line in dataFile:
+                name = line.rstrip().split("(")[0]
+                posX = int(line.rstrip().split("(")[1].split(",")[0])
+                posY = line.rstrip().split("(")[1].split(",")[1]
+                posY = int(posY.replace(")", ""))
+                for graphicNo in self.nodeList:
+                    if graphicNo.nodeVar.name == name:
+                        graphicNo.x = graphicNo.collision.x = posX
+                        graphicNo.y = graphicNo.collision.y = posY
 
-    def createBlankAutomate(self, numberOfLetter):
+    def importAutomateFromCustomFile(self):
+        fileName = self.textInput(
+            "What is the name of the file you want to import ? (case sensitive !!)"
+        )
+        file = open("./automates/" + fileName + ".txt", "r")
+        fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
+
+        fileLines = []
+        isAsynchronous = False
+        for line in file:
+            fileLines.append(line.rstrip())
+            if (not isAsynchronous) and "&" in line:
+                isAsynchronous = True
+
+        alphabet = [fullAlphabet[i] for i in range(int(fileLines[0]))]
+        allautos = [[], [], [], [], []]
+
+        # EXTRACTION DES AUTOS DEPUIS LE FICHIER TXT
+        counter = 0
+        index = -1
+        for line in fileLines[1:]:
+            if counter == 0:
+                index += 1
+                counter = int(line)
+            else:
+                allautos[index].append(line)
+                counter -= 1
+
+        automateNameToObject = {}
+
+        # SPLIT DES AUTOS
+        for groupOfautos in allautos:
+            for autoNumber in range(len(groupOfautos)):
+                groupOfautos[autoNumber] = groupOfautos[autoNumber].split(";")
+                if len(groupOfautos[autoNumber]) == 1:
+                    groupOfautos[autoNumber].append([])
+                elif len(groupOfautos[autoNumber]) == 2:
+                    groupOfautos[autoNumber][1] = groupOfautos[autoNumber][1].split(",")
+                    numberOfTransitions = len(groupOfautos[autoNumber][1])
+                    for transitionNumber in range(numberOfTransitions):
+                        groupOfautos[autoNumber][1][transitionNumber] = groupOfautos[
+                            autoNumber
+                        ][1][transitionNumber].split("/")
+
+        nodeTab = []
+        for groupNumber in range(len(allautos)):
+            for auto in allautos[groupNumber]:
+                isAlreadyHere = False
+                newNode = node.Node(auto[0], False, False)
+                if groupNumber == 0:
+                    newNode.isInit = True
+                    nodeTab.append(newNode)
+                if groupNumber == 1:
+                    newNode.isLast = True
+                    nodeTab.append(newNode)
+                if groupNumber == 2:
+                    newNode.isInit = newNode.isLast = True
+                    nodeTab.append(newNode)
+                if groupNumber == 3:
+                    for n in nodeTab:
+                        if auto[0] == n.getName():
+                            isAlreadyHere = True
+                            n.setBin(True)
+                    if isAlreadyHere == False:
+                        nodeTab.append(newNode)
+                if groupNumber == 4:
+                    nodeTab.append(newNode)
+                if not isAlreadyHere:
+                    automateNameToObject[auto[0]] = newNode
+
+        for group in allautos:
+            for auto in group:
+                currentNode = automateNameToObject[auto[0]]
+                for link in auto[1]:
+                    currentNode.addLinkToLinkList(
+                        [link[0], automateNameToObject[link[1]]]
+                    )
+
+        self.automate = automate.Automate(alphabet, nodeTab, isAsynchronous)
+        self.alphabet = self.automate.alphabet
+        self.nodeAddressToGraphicNodeAddress = {}
+        self.graphicNodeToNodeAddress = {}
+        self.nodeList = []
+        self.linkList = []
+        nbr = 0
+        for graphNode in self.automate.nodeList:
+            graphicNo = graphicNode.GraphicNode(nbr * 200, 50 * nbr, graphNode)
+            self.nodeList.append(graphicNo)
+            self.nodeAddressToGraphicNodeAddress[graphNode] = graphicNo
+            self.graphicNodeToNodeAddress[graphicNo] = graphNode
+            nbr += 1
+        nbr = 0
+        for graphNode in self.automate.nodeList:
+            self.linkList.append([])
+            for link in graphNode.linkList:
+                self.linkList[nbr].append(
+                    graphicLink.GraphicLink(
+                        [link[0], self.nodeAddressToGraphicNodeAddress[link[1]]],
+                        self.nodeList[nbr],
+                    )
+                )
+            nbr += 1
+        if os.path.isfile("./automates/" + fileName + ".data"):
+            dataFile = open("./automates/" + fileName + ".data", "r")
+            for line in dataFile:
+                name = line.rstrip().split("(")[0]
+                posX = int(line.rstrip().split("(")[1].split(",")[0])
+                posY = line.rstrip().split("(")[1].split(",")[1]
+                posY = int(posY.replace(")", ""))
+                for graphicNo in self.nodeList:
+                    if graphicNo.nodeVar.name == name:
+                        graphicNo.x = graphicNo.collision.x = posX
+                        graphicNo.y = graphicNo.collision.y = posY
+
+    def createBlankAutomate(self):
+        isNotAnInt = True
+        while isNotAnInt:
+            userInput = self.textInput(
+                "Write how many letter will be in your alphabet than press enter"
+            )
+            try:
+                numberOfLetter = int(userInput)
+                isNotAnInt = False
+            except:
+                self.addPopup("The input is not an int !")
         fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
         alphabet = [fullAlphabet[i] for i in range(numberOfLetter)]
 
@@ -569,7 +704,7 @@ class Main:
     def run(self):
         pygame.mixer_music.play(-1)
         while self.running:
-            pygame.mixer_music.set_volume(0.7*self.musicOn)
+            pygame.mixer_music.set_volume(0.7 * self.musicOn)
             self.screen.fill((50, 50, 50))
             # Check des events
 
@@ -583,8 +718,7 @@ class Main:
                             if graphNode.collision.collidepoint(event.pos):
                                 self.grabbed = graphNode
                                 self.clicked = graphNode
-                                self.addPopup("Clicked a node")
-                                if self.sfxOn :
+                                if self.sfxOn:
                                     self.clocSound[random.randint(0, 8)].play()
                         for groups in self.linkList:
                             for link in groups:
@@ -603,10 +737,11 @@ class Main:
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
                             self.running = False
+                            main.Main().run()
                         if self.determineButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            if self.sfxOn :
+                            if self.sfxOn:
                                 self.determinisationSound.stop()
                                 self.determinisationSound.play()
                             self.automate.toDetermine()
@@ -645,7 +780,7 @@ class Main:
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
                             if self.automate.toMinimize():
-                                if self.sfxOn :
+                                if self.sfxOn:
                                     self.minimisationSoud.stop()
                                     self.minimisationSoud.play()
                                 self.nodeAddressToGraphicNodeAddress = {}
@@ -687,7 +822,7 @@ class Main:
                         elif self.standaButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            if self.sfxOn :
+                            if self.sfxOn:
                                 self.standardisationSound.stop()
                                 self.standardisationSound.play()
                             self.automate.toStandardize()
@@ -726,7 +861,7 @@ class Main:
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
                             if self.automate.toComplete():
-                                if self.sfxOn :
+                                if self.sfxOn:
                                     self.completionSound.stop()
                                     self.completionSound.play()
                                 self.nodeAddressToGraphicNodeAddress = {}
@@ -766,9 +901,9 @@ class Main:
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
                             if self.automate.toComplement():
-                                if self.sfxOn :                                                    
-                                  self.complementationSoud.stop()
-                                  self.complementationSoud.play()
+                                if self.sfxOn:
+                                    self.complementationSoud.stop()
+                                    self.complementationSoud.play()
                                 self.nodeAddressToGraphicNodeAddress = {}
                                 self.graphicNodeToNodeAddress = {}
                                 self.nodeList = []
@@ -807,14 +942,14 @@ class Main:
                         elif self.importExportButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            if self.sfxOn :
+                            if self.sfxOn:
                                 self.importExportSound.stop()
                                 self.importExportSound.play()
                             self.openImportMenu = True
                         elif self.checkWordButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            if self.sfxOn :
+                            if self.sfxOn:
                                 self.checkWordSound.stop()
                                 self.checkWordSound.play()
                             self.checkWord()
@@ -830,7 +965,9 @@ class Main:
                             nextName = "0"
                             biggestNumber = -1
                             for n in self.automate.nodeList:
-                                if biggestNumber < int(n.name):
+                                if n.name == "Bin":
+                                    pass
+                                elif biggestNumber < int(n.name):
                                     biggestNumber = int(n.name)
                             if biggestNumber != -1:
                                 nextName = str(biggestNumber + 1)
@@ -846,7 +983,6 @@ class Main:
                                 newGraphicNode
                             )
                             self.graphicNodeToNodeAddress[newGraphicNode] = newNode
-                            print(self.automate)
                         else:
                             collideNode = None
                             for graphNode in self.nodeList:
@@ -867,8 +1003,6 @@ class Main:
                                     self.dragLink.nodeVar.linkList.append(
                                         ["a", collideNode.nodeVar]
                                     )
-                                    for link in self.linkList[groupIndex]:
-                                        print(link.linkVar)
                                 elif groupIndex == None:
                                     self.linkList.append([])
                                     self.linkList[-1].append(
@@ -879,9 +1013,6 @@ class Main:
                                     self.dragLink.nodeVar.linkList.append(
                                         ["a", collideNode.nodeVar]
                                     )
-                                    print(self.linkList[-1])
-                                    for link in self.linkList[-1]:
-                                        print(link.linkVar)
                             self.dragLink = None
 
                 rectArrowDrawed = []
@@ -966,7 +1097,7 @@ class Main:
                                     counterSelectLetter % len(lettersAvailable)
                                 ]
                             else:
-                                print("All letters already used !")
+                                self.addPopup("All letters already used !")
                         if (
                             keys[pygame.K_DOWN]
                             and self.clicked == links
@@ -990,7 +1121,7 @@ class Main:
                                     counterSelectLetter % len(lettersAvailable)
                                 ]
                             else:
-                                print("All letters already used !")
+                                self.addPopup("All letters already used !")
 
                 # Affichage des noeuds
                 for graphNode in self.nodeList:
@@ -1166,38 +1297,27 @@ class Main:
                             self.buttonDown.rect.collidepoint(
                                 pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                             )
-                            and self.importMenuY < 44
+                            and self.importMenuX < 0
                         ):
-                            self.importMenuY += 1
-                            self.importMenuX += 1
+                            self.importMenuY -= 1
+                            self.importMenuX -= 1
                         elif (
                             self.buttonUp.rect.collidepoint(
                                 pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                             )
-                            and self.importMenuX > 0
+                            and self.importMenuY > 44
                         ):
-                            self.importMenuY -= 1
-                            self.importMenuX -= 1
+                            self.importMenuY += 1
+                            self.importMenuX += 1
                         elif self.buttonNewBlank.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            isNotAnInt = True
-                            while isNotAnInt:
-                                userInput = self.textInput(
-                                    "Write how many letter will be in your alphabet than press enter"
-                                )
-                                try:
-                                    numberOfLetter = int(userInput)
-                                    isNotAnInt = False
-                                except:
-                                    self.addPopup("The input is not an int !")
-                            print(numberOfLetter, userInput)
-                            self.createBlankAutomate(numberOfLetter)
+                            self.createBlankAutomate()
                             self.openImportMenu = False
                         elif self.exportButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            fileName = input("Name of your file : ")
+                            fileName = self.textInput("Write the name of your file : ")
                             self.automate.saveToFile(fileName, self.nodeList)
                         else:
                             for button in self.buttonImportTab:
@@ -1208,12 +1328,13 @@ class Main:
                                         self.buttonImportTab.index(button) + 1
                                     )
                                     self.openImportMenu = False
-                    # elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-
-                    # elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
-
-                    # elif event.type == pygame.MOUSEBUTTONUP and event.button == 3:
-
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_UP] and self.importMenuY < 44:
+                    self.importMenuY += 1
+                    self.importMenuX += 1
+                elif keys[pygame.K_DOWN] and self.importMenuX > 0:
+                    self.importMenuY -= 1
+                    self.importMenuX -= 1
                 self.importMenu()
 
             pygame.display.flip()
