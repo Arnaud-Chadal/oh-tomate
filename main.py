@@ -2,7 +2,7 @@ import node
 import automate
 import graphicWindow
 
-file = open("./automates/automateTest35.txt", "r")
+file = open("./automates/textAutomateAlexis.txt", "r")
 fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
 fileLines = []
 isAsynchronous = False

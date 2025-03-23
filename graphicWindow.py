@@ -5,7 +5,7 @@ import node
 import button
 import automate
 from math import pi, cos, sin
-import time
+import os
 import gc
 import pygame.mixer_music
 import random
@@ -28,6 +28,7 @@ class Main:
         self.completionSound = pygame.mixer.Sound("./src/completion.mp3")
         self.importExportSound = pygame.mixer.Sound("./src/importExport.mp3")
         self.checkWordSound = pygame.mixer.Sound("./src/checkWord.mp3")
+        self.popUps = []
         self.clocSound = []
         for i in range(9):
             self.clocSound.append(
@@ -63,6 +64,7 @@ class Main:
         self.importMenuY = 6
         self.transitionMenuX = 1920
         self.transitionMenuY = 0
+        self.quitButton = button.Button(20, 20, 100, 70)
         self.determineButton = button.Button(
             self.menuX + 70, self.menuY + 100 - 30, 200, 80
         )
@@ -114,6 +116,39 @@ class Main:
                     )
                 )
             nbr += 1
+        if os.path.isfile("./automates/textAutomateAlexis.data"):
+            dataFile = open("./automates/textAutomateAlexis.data", "r")
+            for line in dataFile:
+                name = line.rstrip().split("(")[0]
+                posX = int(line.rstrip().split("(")[1].split(",")[0])
+                posY = line.rstrip().split("(")[1].split(",")[1]
+                posY = int(posY.replace(")", ""))
+                for graphicNo in self.nodeList:
+                    if graphicNo.nodeVar.name == name:
+                        graphicNo.x = graphicNo.collision.x = posX
+                        graphicNo.y = graphicNo.collision.y = posY
+
+    def addPopup(self, text):
+        self.popUps.append(
+            [
+                self.my_font.render(text, 1, (255, 255, 255)).convert_alpha(),
+                200,
+            ]
+        )
+
+    def drawPopup(self):
+        i = 0
+        while i < len(self.popUps):
+            if self.popUps[i][1] > 0:
+                self.screen.blit(
+                    self.popUps[i][0],
+                    (860 - (self.popUps[i][0].get_width() / 2), 30 + (50 * i)),
+                )
+                self.popUps[i][1] -= 2
+                self.popUps[i][0].set_alpha(self.popUps[i][1])
+                i += 1
+            else:
+                self.popUps.remove(self.popUps[i])
 
     def drawTransitionMenu(self):
         my_font = pygame.font.SysFont("Comic Sans MS", 15)
@@ -349,7 +384,8 @@ class Main:
             nbr += 1
 
     def createBlankAutomate(self, numberOfLetter):
-        alphabet = ["a", "b", "c"]
+        fullAlphabet = "abcdefghijklmnopqrstuvwxyz"
+        alphabet = [fullAlphabet[i] for i in range(numberOfLetter)]
 
         nodeTab = []
 
@@ -471,6 +507,61 @@ class Main:
             pygame.display.flip()
             input("Press enter to continue")
 
+    def textInput(self, message):
+        messageSurface = self.my_font.render(message, 1, (255, 255, 255))
+
+        user_text = ""
+        input_rect = pygame.Rect(200, 200 + messageSurface.get_height(), 140, 70)
+
+        color_active = pygame.Color("gray")
+        color_passive = pygame.Color("grey98")
+        color = color_passive
+
+        active = True
+        isInputText = True
+
+        while isInputText:
+            for event in pygame.event.get():
+
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if input_rect.collidepoint(event.pos):
+                        active = True
+                    else:
+                        active = False
+
+                if event.type == pygame.KEYDOWN:
+                    if active:
+                        if event.key == pygame.K_BACKSPACE:
+                            user_text = user_text[:-1]
+                        elif event.key == pygame.K_RETURN:
+                            isInputText = False
+                        else:
+                            user_text += event.unicode
+
+            self.screen.fill((50, 50, 50))
+
+            self.drawPopup()
+
+            if active:
+                color = color_active
+            else:
+                color = color_passive
+
+            pygame.draw.rect(self.screen, color, input_rect)
+
+            text_surface = self.my_font.render(user_text, True, (0, 0, 0))
+            self.screen.blit(text_surface, (input_rect.x + 5, input_rect.y + 5))
+            self.screen.blit(messageSurface, (200, 160))
+            input_rect.w = max(100, text_surface.get_width() + 10)
+
+            pygame.display.flip()
+            self.clock.tick(60)
+
+        return user_text
+
     def run(self):
         pygame.mixer_music.play(-1)
         while self.running:
@@ -488,6 +579,7 @@ class Main:
                                 self.grabbed = graphNode
                                 self.clicked = graphNode
                                 self.clocSound[random.randint(0, 8)].play()
+                                self.addPopup("Clicked a node")
                         for groups in self.linkList:
                             for link in groups:
                                 link.isClicked = False
@@ -501,6 +593,10 @@ class Main:
                                     link.isClicked = True
                                     self.clicked = link
                                     self.grabbed = link
+                        if self.quitButton.rect.collidepoint(
+                            pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                        ):
+                            self.running = False
                         if self.determineButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
@@ -541,41 +637,45 @@ class Main:
                         elif self.minimButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.minimisationSoud.stop()
-                            self.minimisationSoud.play()
-                            self.automate.toMinimize()
-                            self.nodeAddressToGraphicNodeAddress = {}
-                            self.graphicNodeToNodeAddress = {}
-                            self.nodeList = []
-                            self.linkList = []
-                            nbr = 0
-                            for graphNode in self.automate.nodeList:
-                                graphicNo = graphicNode.GraphicNode(
-                                    nbr * 200, 50 * nbr, graphNode
-                                )
-                                self.nodeList.append(graphicNo)
-                                self.nodeAddressToGraphicNodeAddress[graphNode] = (
-                                    graphicNo
-                                )
-                                self.graphicNodeToNodeAddress[graphicNo] = graphNode
-                                nbr += 1
-                            nbr = 0
-                            for graphNode in self.automate.nodeList:
-                                self.linkList.append([])
-                                for link in graphNode.linkList:
-                                    self.linkList[nbr].append(
-                                        graphicLink.GraphicLink(
-                                            [
-                                                link[0],
-                                                self.nodeAddressToGraphicNodeAddress[
-                                                    link[1]
-                                                ],
-                                            ],
-                                            self.nodeList[nbr],
-                                        )
+                            if self.automate.toMinimize():
+                                self.minimisationSoud.stop()
+                                self.minimisationSoud.play()
+                                self.nodeAddressToGraphicNodeAddress = {}
+                                self.graphicNodeToNodeAddress = {}
+                                self.nodeList = []
+                                self.linkList = []
+                                nbr = 0
+                                for graphNode in self.automate.nodeList:
+                                    graphicNo = graphicNode.GraphicNode(
+                                        nbr * 200, 50 * nbr, graphNode
                                     )
-                                nbr += 1
-                            self.automate.printTransitionTables()
+                                    self.nodeList.append(graphicNo)
+                                    self.nodeAddressToGraphicNodeAddress[graphNode] = (
+                                        graphicNo
+                                    )
+                                    self.graphicNodeToNodeAddress[graphicNo] = graphNode
+                                    nbr += 1
+                                nbr = 0
+                                for graphNode in self.automate.nodeList:
+                                    self.linkList.append([])
+                                    for link in graphNode.linkList:
+                                        self.linkList[nbr].append(
+                                            graphicLink.GraphicLink(
+                                                [
+                                                    link[0],
+                                                    self.nodeAddressToGraphicNodeAddress[
+                                                        link[1]
+                                                    ],
+                                                ],
+                                                self.nodeList[nbr],
+                                            )
+                                        )
+                                    nbr += 1
+                                self.automate.printTransitionTables()
+                            else:
+                                self.addPopup(
+                                    "Automate not determine and/or not complete !"
+                                )
                         elif self.standaButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
@@ -616,77 +716,83 @@ class Main:
                         elif self.completeButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.completionSound.stop()
-                            self.completionSound.play()
-                            self.automate.toComplete()
-                            self.nodeAddressToGraphicNodeAddress = {}
-                            self.graphicNodeToNodeAddress = {}
-                            self.nodeList = []
-                            self.linkList = []
-                            nbr = 0
-                            for graphNode in self.automate.nodeList:
-                                graphicNo = graphicNode.GraphicNode(
-                                    nbr * 200, 50 * nbr, graphNode
-                                )
-                                self.nodeList.append(graphicNo)
-                                self.nodeAddressToGraphicNodeAddress[graphNode] = (
-                                    graphicNo
-                                )
-                                self.graphicNodeToNodeAddress[graphicNo] = graphNode
-                                nbr += 1
-                            nbr = 0
-                            for graphNode in self.automate.nodeList:
-                                self.linkList.append([])
-                                for link in graphNode.linkList:
-                                    self.linkList[nbr].append(
-                                        graphicLink.GraphicLink(
-                                            [
-                                                link[0],
-                                                self.nodeAddressToGraphicNodeAddress[
-                                                    link[1]
-                                                ],
-                                            ],
-                                            self.nodeList[nbr],
-                                        )
+                            if self.automate.toComplete():
+                                self.completionSound.stop()
+                                self.completionSound.play()
+                                self.nodeAddressToGraphicNodeAddress = {}
+                                self.graphicNodeToNodeAddress = {}
+                                self.nodeList = []
+                                self.linkList = []
+                                nbr = 0
+                                for graphNode in self.automate.nodeList:
+                                    graphicNo = graphicNode.GraphicNode(
+                                        nbr * 200, 50 * nbr, graphNode
                                     )
-                                nbr += 1
+                                    self.nodeList.append(graphicNo)
+                                    self.nodeAddressToGraphicNodeAddress[graphNode] = (
+                                        graphicNo
+                                    )
+                                    self.graphicNodeToNodeAddress[graphicNo] = graphNode
+                                    nbr += 1
+                                nbr = 0
+                                for graphNode in self.automate.nodeList:
+                                    self.linkList.append([])
+                                    for link in graphNode.linkList:
+                                        self.linkList[nbr].append(
+                                            graphicLink.GraphicLink(
+                                                [
+                                                    link[0],
+                                                    self.nodeAddressToGraphicNodeAddress[
+                                                        link[1]
+                                                    ],
+                                                ],
+                                                self.nodeList[nbr],
+                                            )
+                                        )
+                                    nbr += 1
+                            else:
+                                self.addPopup("Automate not determine")
                         elif self.complementButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.complementationSoud.stop()
-                            self.complementationSoud.play()
-                            self.automate.toComplement()
-                            self.nodeAddressToGraphicNodeAddress = {}
-                            self.graphicNodeToNodeAddress = {}
-                            self.nodeList = []
-                            self.linkList = []
-                            nbr = 0
-                            for graphNode in self.automate.nodeList:
-                                graphicNo = graphicNode.GraphicNode(
-                                    nbr * 200, 50 * nbr, graphNode
-                                )
-                                self.nodeList.append(graphicNo)
-                                self.nodeAddressToGraphicNodeAddress[graphNode] = (
-                                    graphicNo
-                                )
-                                self.graphicNodeToNodeAddress[graphicNo] = graphNode
-                                nbr += 1
-                            nbr = 0
-                            for graphNode in self.automate.nodeList:
-                                self.linkList.append([])
-                                for link in graphNode.linkList:
-                                    self.linkList[nbr].append(
-                                        graphicLink.GraphicLink(
-                                            [
-                                                link[0],
-                                                self.nodeAddressToGraphicNodeAddress[
-                                                    link[1]
-                                                ],
-                                            ],
-                                            self.nodeList[nbr],
-                                        )
+                            if self.automate.toComplement():
+                                self.complementationSoud.stop()
+                                self.complementationSoud.play()
+                                self.nodeAddressToGraphicNodeAddress = {}
+                                self.graphicNodeToNodeAddress = {}
+                                self.nodeList = []
+                                self.linkList = []
+                                nbr = 0
+                                for graphNode in self.automate.nodeList:
+                                    graphicNo = graphicNode.GraphicNode(
+                                        nbr * 200, 50 * nbr, graphNode
                                     )
-                                nbr += 1
+                                    self.nodeList.append(graphicNo)
+                                    self.nodeAddressToGraphicNodeAddress[graphNode] = (
+                                        graphicNo
+                                    )
+                                    self.graphicNodeToNodeAddress[graphicNo] = graphNode
+                                    nbr += 1
+                                nbr = 0
+                                for graphNode in self.automate.nodeList:
+                                    self.linkList.append([])
+                                    for link in graphNode.linkList:
+                                        self.linkList[nbr].append(
+                                            graphicLink.GraphicLink(
+                                                [
+                                                    link[0],
+                                                    self.nodeAddressToGraphicNodeAddress[
+                                                        link[1]
+                                                    ],
+                                                ],
+                                                self.nodeList[nbr],
+                                            )
+                                        )
+                                    nbr += 1
+                            else:
+                                self.addPopup(
+                                    "Automate not determine and/or not complete"
+                                )
                         elif self.importExportButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
@@ -771,19 +877,19 @@ class Main:
                 if keys[pygame.K_RIGHT] and self.clicked == None:
                     for graphNode in self.nodeList:
                         graphNode.x -= 10
-                        graphNode.collision.x += 10
+                        graphNode.collision.x -= 10
                 if keys[pygame.K_LEFT] and self.clicked == None:
                     for graphNode in self.nodeList:
                         graphNode.x += 10
-                        graphNode.collision.x -= 10
+                        graphNode.collision.x += 10
                 if keys[pygame.K_DOWN] and self.clicked == None:
                     for graphNode in self.nodeList:
                         graphNode.y -= 10
-                        graphNode.collision.y += 10
+                        graphNode.collision.y -= 10
                 if keys[pygame.K_UP] and self.clicked == None:
                     for graphNode in self.nodeList:
                         graphNode.y += 10
-                        graphNode.collision.y -= 10
+                        graphNode.collision.y += 10
 
                 if self.countDownSelectLetter > 0:
                     self.countDownSelectLetter -= 1
@@ -1030,6 +1136,8 @@ class Main:
 
                 self.drawMenu()
                 self.drawTransitionMenu()
+                self.drawPopup()
+                self.quitButton.drawButton(self.screen, "Quit")
 
             else:
 
@@ -1060,12 +1168,24 @@ class Main:
                         elif self.buttonNewBlank.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.createBlankAutomate(3)
+                            isNotAnInt = True
+                            while isNotAnInt:
+                                userInput = self.textInput(
+                                    "Write how many letter will be in your alphabet than press enter"
+                                )
+                                try:
+                                    numberOfLetter = int(userInput)
+                                    isNotAnInt = False
+                                except:
+                                    self.addPopup("The input is not an int !")
+                            print(numberOfLetter, userInput)
+                            self.createBlankAutomate(numberOfLetter)
                             self.openImportMenu = False
                         elif self.exportButton.rect.collidepoint(
                             pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                         ):
-                            self.automate.saveToFile("textAutomateAlexis")
+                            fileName = input("Name of your file : ")
+                            self.automate.saveToFile(fileName, self.nodeList)
                         else:
                             for button in self.buttonImportTab:
                                 if button.rect.collidepoint(
