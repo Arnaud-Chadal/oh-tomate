@@ -523,9 +523,19 @@ class Main:
     def checkWord(self):
         textInput = self.textInput("Write a word to be recognize")
         if self.automate.recognize(textInput):
-            self.textInput("The word IS RECOGNIZE !! Press enter to continue")
+            if textInput == "":
+                textInput = "EMPTY WORD"
+            self.textInput(
+                "The word " + textInput + " IS RECOGNIZE !! Press enter to continue"
+            )
         else:
-            self.textInput("The word is NOT recognize..... Press enter to continue")
+            if textInput == "":
+                textInput = "EMPTY WORD"
+            self.textInput(
+                "The word "
+                + textInput
+                + " is NOT recognize..... Press enter to continue"
+            )
 
     def textInput(self, message):
         messageSurface = self.my_font.render(message, 1, (255, 255, 255))
