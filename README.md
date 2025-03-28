@@ -14,11 +14,11 @@ However, we recommand you to learn a little bit about automate before diving int
 
 ## Screenshots
 
-| Image                                | Description                                                                         |
-| ------------------------------------ | ----------------------------------------------------------------------------------- |
-| Main Menu                            | ![Main Menu Image](image.png)                                                       |
-| Edition Window                       | ![Edition Window]({41327216-8A7E-484E-AD73-2BCAC70BAD44}.png)                       |
-| Import Export Window                 | ![Import Export Window]({44739E5E-D6D1-4DD6-BCEA-3AECCD360AC1}.png)                 |
-| Edition Window with an automate open | ![Edition Window with an automate open]({76C7CE6D-31BB-40FF-964F-A295C0E97A56}.png) |
-| Action Menu Open                     | ![Action Menu Open]({882A1BB0-5DF4-4E81-89F5-9E850D7B6D26}.png)                     |
-| Transition Menu Open                 | ![Transition Menu Open]({B6F78DF6-0412-437D-A331-6679710838A5}.png)                 |
+| Image                                | Description                                                                                      |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| Main Menu                            | ![Main Menu Image](readmeImages/image.png)                                                       |
+| Edition Window                       | ![Edition Window](readmeImages/{41327216-8A7E-484E-AD73-2BCAC70BAD44}.png)                       |
+| Import Export Window                 | ![Import Export Window](readmeImages/{44739E5E-D6D1-4DD6-BCEA-3AECCD360AC1}.png)                 |
+| Edition Window with an automate open | ![Edition Window with an automate open](readmeImages/{76C7CE6D-31BB-40FF-964F-A295C0E97A56}.png) |
+| Action Menu Open                     | ![Action Menu Open](readmeImages/{882A1BB0-5DF4-4E81-89F5-9E850D7B6D26}.png)                     |
+| Transition Menu Open                 | ![Transition Menu Open](readmeImages/{B6F78DF6-0412-437D-A331-6679710838A5}.png)                 |
