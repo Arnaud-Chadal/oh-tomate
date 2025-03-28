@@ -3,6 +3,7 @@ __pycache__/
 ./__pycache__/
 *.py[cod]
 *$py.class
+./__pycache__/*
 
 # Ignorer les fichiers liés aux IDE
 .vscode/

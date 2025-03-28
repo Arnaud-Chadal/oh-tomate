@@ -1,52 +1,12 @@
-# projet-automate-P2
+# OH ! Tomate
+![Static Badge](https://img.shields.io/badge/state-beta-orange?style=flat) ![Static Badge](https://img.shields.io/badge/license-MIT-green?style=flat) ![Static Badge](https://img.shields.io/badge/current%20version-1.1.1-blue?style=flat) ![Static Badge](https://img.shields.io/badge/python-3.11%7C3.12%7C3.13-purple?style=flat&link=https%3A%2F%2Fwww.python.org%2Fdownloads%2F) ![Static Badge](https://img.shields.io/badge/pygame-2.6.1-yellow?style=flat&link=https%3A%2F%2Fpypi.org%2Fproject%2Fpygame%2F)
 
-Un petit projet sympa entre amis.
+## About OH ! Tomate
+**OH ! Tomate** is a project as part of the Automate module in second year of preparatory class in Efrei. The point of this app is to create, modify and apply algorithms to what is called an automate. The first version of this app was buit using python and the pygame library within a week. We are currently working on a more stable version before building a better one directly for the web.
 
-## What you need to do to run the program
+## Getting Started with OH ! Tomate
+If you're new, you can directly download the latest version and just have fun! For more information on how to install the package, see : [Installation Instruction]().
 
-- Install pygame with the following `pip install pygame` because our program is using a graphic interface !
-- Run the main.py file
-- Have fun!
+However, we recommand you to learn a little bit about automate before diving into this incredible app. You can learn basic and more advance knowledge directly in our wiki : [Learn about automate]().
 
-## How to use the program
-
-In the menu, you have already multiple choice :
-
-- You can create a blank canvas, and start creating your own automate
-- You can load an automate from the one that were given to us for this project
-- You can load an automate from a specific file (Warning : It's case sensitive and it's not a file explorer...)
-- You can exit (Peronnaly, I would not go for this option...)
-
----
-
-While in the edit mode, you can add
-
-- Add a node by right clicking in an empty space
-- Move a node by left clicking and dragging the node
-- Modify a transition by clicking on the arrow, and then click on the up or down key on your keyboard to change the letter
-- Add a transition between 2 nodes by left clicking on a node and dragging the link to another node (or himself)
-- Delete a node/link by clicking on it and the Suppr
-
----
-
-There is a lot of functionnality to explore, such as:
-
-- Standardize
-- Determine
-- Complete
-- Minimize
-- Complement
-
-Some of those function requires a determinisation or/and a completion to work, but you'll be notif in those case !
-
----
-
-You can also check if a word is recognize by an automate by clicking on the Check Word button
-
----
-
-Finally, you can re-create a blank automate, load an automate or save your current work.
-When you save, 2 files will be created : `NameOfYourAutomate.txt` and `NameOfYourAutomate.data`
-Please, do not modify the 2 files, because one is here to know the states/nodes, and the other one is used to have the position of the nodes !!!!
-
-## I think this is it, so have fun !
+## Screenshots
