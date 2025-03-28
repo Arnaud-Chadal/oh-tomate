@@ -4,7 +4,6 @@ import button
 import graphicWindow
 from random import randint
 
-
 class Main:
     def __init__(self) -> None:
         pygame.font.init()
