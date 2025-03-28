@@ -32,9 +32,6 @@ class Automate:
 
     # Méthode de vérification :
 
-    def isMinimized(self):
-        pass
-
     def isStantard(self):
         numberOfInitialNodesIsOk = False
         for node in self.nodeList:
@@ -51,7 +48,7 @@ class Automate:
 
     def isDetermined(self):
         if self.isAsynchronous:
-            return 0
+            return False
         numberOfInitStates = 0
         alphabetLen = len(self.alphabet)
         for node in self.nodeList:
@@ -59,21 +56,29 @@ class Automate:
             if node.isInit:
                 numberOfInitStates += 1
                 if numberOfInitStates > 1:
-                    return 0
+                    return False
             numberOfTransitions = len(node.linkList)
             if numberOfTransitions > alphabetLen:
-                return 0
+                return False
             for link in node.linkList:
                 if link[0] == "&":
-                    return 0
+                    return False
                 insertionPlace = ord(link[0]) - 97
                 transition[insertionPlace] += 1
                 if transition[insertionPlace] > 1:
-                    return 0
-        return 1
+                    return False
+        return True
 
-    def isCompet(self):
-        pass
+    def isComplet(self):
+        if not self.isDetermined:
+            return False
+        for node in self.nodeList:
+            toGet = len(self.alphabet)
+            for link in node.linkList:
+                toGet -= 1
+            if toGet > 0:
+                return False
+        return True
 
     # Méthodes d'action :
 
@@ -121,8 +126,6 @@ class Automate:
             while linkFromClosureToProcess:
 
                 for linkToProcess in linkFromClosureToProcess[0].linkList:
-                    # print('ici:',linkToProcess[1].name)
-                    # print(linkToProcess[0])
                     if (not newIsInit) and (linkToProcess[1].isInit):
                         newIsInit = 1
                     if (not newIsLast) and (linkToProcess[1].isLast):
@@ -130,11 +133,9 @@ class Automate:
                     if linkToProcess[0] == "&" and (
                         linkToProcess[1].name not in newName
                     ):
-                        # print("ici &")
                         newName.add(linkToProcess[1].name)
                         linkFromClosureToProcess.append(linkToProcess[1])
                     if linkToProcess[0] in self.alphabet:
-                        # print("ici alpha")
                         newLink.append([linkToProcess[0], linkToProcess[1]])
                 del linkFromClosureToProcess[0]
             newNames[ele.name] = newName
@@ -158,20 +159,8 @@ class Automate:
                 self.nodeLastList.append(n)
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
         self.isAsynchronous = 0
-        print(self)
 
     def toDetermine(self):
-
-        print("-----\n\n\n")
-        for i in self.nodeInitList:
-            print(i)
-        print("-----\n\n\n")
-        for i in self.nodeLastList:
-            print(i)
-        print("-----\n\n\n")
-        for i in self.nodeLastAndInitList:
-            print(i)
-        print("-----\n\n\n")
 
         numberOfNewNode = 0
         nodeNewName = set()
@@ -253,14 +242,7 @@ class Automate:
 
         self.nodeList = automateNewStructure.copy()
 
-        self.nodeInitList = []
-        self.nodeLastList = []
-        for n in self.nodeList:
-            if n.isInit:
-                self.nodeInitList.append(n)
-            if n.isLast:
-                self.nodeLastList.append(n)
-        self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
+        self.updateInitAndLastNodeList()
         self.backupNodeList[1] = translationTable
 
     def updateInitAndLastNodeList(self):
@@ -274,7 +256,8 @@ class Automate:
         self.nodeLastAndInitList = list(set(self.nodeInitList) & set(self.nodeLastList))
 
     def toMinimize(self):
-
+        if not self.isComplet():
+            return False
         partition = [[], []]
         newPartition = [[], []]
         for node in self.nodeList:
@@ -308,7 +291,6 @@ class Automate:
                     currentPartition.append([node])
                     newPartition[groupNum].remove(node)
                     transitionNode = transition[node]
-                    print(transitionNode)
                     indexMax = len(newPartition[groupNum])
                     currentIndex = 0
                     while currentIndex < indexMax:
@@ -323,7 +305,6 @@ class Automate:
                         else:
                             currentIndex += 1
                     indexCurrent += 1
-            print(transition)
 
             newPartition = []
             for i in currentPartition:
@@ -332,7 +313,6 @@ class Automate:
         for newStateNumber in range(len(partition)):
             for i in range(len(partition[newStateNumber])):
                 partition[newStateNumber][i] = partition[newStateNumber][i].getName()
-        print(partition)
         self.backupNodeList[3] = partition
         newNode = []
         newNodeDico = {}
@@ -357,8 +337,11 @@ class Automate:
                         n.addLinkToLinkList([self.alphabet[linkNum], key])
 
         self.nodeList = newNode.copy()
+        return True
 
     def toComplete(self):
+        if not self.isDetermined():
+            return False
         varBin = 0
         for nodeVar in self.nodeList:
             if nodeVar.bin:
@@ -367,7 +350,6 @@ class Automate:
             varBin = node.Node("Bin", 0, 0)
             varBin.bin = True
             self.nodeList.append(varBin)
-            print(self.backupNodeList)
             if self.backupNodeList[1] == []:
                 self.backupNodeList[2] = self.backupNodeList[0].copy()
             else:
@@ -382,11 +364,15 @@ class Automate:
                         linkExists = True
                 if not linkExists:
                     nodeVar.linkList.append([letter, varBin])
+        return True
 
     def toComplement(self):
+        if not self.isComplet():
+            return False
         for nodeVar in self.nodeList:
             nodeVar.isLast = not nodeVar.isLast
         self.updateInitAndLastNodeList()
+        return True
 
     def toStandardize(self):
         newNode = node.Node(str(len(self.nodeList)), True, False)
@@ -403,7 +389,7 @@ class Automate:
                 self.nodeList[nodeIndex].isInit = False
         self.nodeList.insert(0, newNode)
 
-    def saveToFile(self, fileName):
+    def saveToFile(self, fileName, graphicNodeTab):
         numberOfInitialStates = 0
         numberOfFinalStates = 0
         numberOfInitialAndFinalStates = 0
@@ -417,17 +403,21 @@ class Automate:
                 numberOfFinalStates += 1
             if node.bin:
                 thereIsABin = True
-        if ".txt" not in fileName:
+        if len(fileName) > 5 and fileName[len(fileName) - 4 :] == ".txt":
+            filePath = "./automates/" + fileName
+            dataPath = "./automates/" + fileName[: len(fileName) - 4] + ".data"
+        else:
             filePath = "./automates/" + fileName + ".txt"
-        if os.path.exists(filePath):
-            return False
+            dataPath = "./automates/" + fileName + ".data"
         file = open(filePath, "w")
         file.write(str(len(self.alphabet)) + "\n")
         file.write(str(numberOfInitialStates) + "\n")
         if numberOfInitialStates > 0:
             for node in self.nodeList:
                 if node.isInit and not node.isLast:
-                    line = node.getName() + ";"
+                    line = node.getName()
+                    if len(node.linkList) != 0:
+                        line += ";"
                     for link in node.linkList:
                         line += link[0] + "/" + link[1].getName() + ","
                     line = line.rstrip(",")
@@ -436,7 +426,9 @@ class Automate:
         if numberOfFinalStates > 0:
             for node in self.nodeList:
                 if node.isLast and not node.isInit:
-                    line = node.getName() + ";"
+                    line = node.getName()
+                    if len(node.linkList) != 0:
+                        line += ";"
                     for link in node.linkList:
                         line += link[0] + "/" + link[1].getName() + ","
                     line = line.rstrip(",")
@@ -445,7 +437,9 @@ class Automate:
         if numberOfInitialAndFinalStates > 0:
             for node in self.nodeList:
                 if node.isInit and node.isLast:
-                    line = node.getName() + ";"
+                    line = node.getName()
+                    if len(node.linkList) != 0:
+                        line += ";"
                     for link in node.linkList:
                         line += link[0] + "/" + link[1].getName() + ","
                     line = line.rstrip(",")
@@ -454,7 +448,9 @@ class Automate:
         if thereIsABin:
             for node in self.nodeList:
                 if node.bin:
-                    line = node.getName() + ";"
+                    line = node.getName()
+                    if len(node.linkList) != 0:
+                        line += ";"
                     for link in node.linkList:
                         line += link[0] + "/" + link[1].getName() + ","
                     line = line.rstrip(",")
@@ -479,19 +475,31 @@ class Automate:
         ):
             for node in self.nodeList:
                 if not node.isInit and not node.isLast and not node.bin:
-                    line = node.getName() + ";"
+                    line = node.getName()
+                    if len(node.linkList) != 0:
+                        line += ";"
                     for link in node.linkList:
                         line += link[0] + "/" + link[1].getName() + ","
                     line = line.rstrip(",")
                     file.write(line + "\n")
         file.close()
+        dataFile = open(dataPath, "w")
+        for graphicNode in graphicNodeTab:
+            dataFile.write(
+                str(graphicNode.nodeVar.name)
+                + "("
+                + str(graphicNode.x)
+                + ","
+                + str(graphicNode.y)
+                + ")\n"
+            )
+        dataFile.close()
 
     def recognize(self, word: str) -> bool:
         if not self.isDetermined():
             self.toDetermine()
         for c in word:
             if c not in self.alphabet:
-                print("Not same alphabet")
                 return False
         wordCopy = word
         node = self.nodeInitList[0]
