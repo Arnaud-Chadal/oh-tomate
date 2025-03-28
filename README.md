@@ -1,6 +1,6 @@
 # OH ! Tomate
 
-![Static Badge](https://img.shields.io/badge/state-beta-orange?style=flat) ![Static Badge](https://img.shields.io/badge/license-MIT-green?style=flat) ![Static Badge](https://img.shields.io/badge/current%20version-1.1.1-blue?style=flat) ![Static Badge](https://img.shields.io/badge/python-3.11%7C3.12%7C3.13-purple?style=flat&link=https%3A%2F%2Fwww.python.org%2Fdownloads%2F) ![Static Badge](https://img.shields.io/badge/pygame-2.6.1-yellow?style=flat&link=https%3A%2F%2Fpypi.org%2Fproject%2Fpygame%2F)
+![Static Badge](https://img.shields.io/badge/state-beta-orange?style=flat) ![Static Badge](https://img.shields.io/badge/license-MIT-green?style=flat) [![Static Badge](https://img.shields.io/badge/current%20version-1.1.1-blue?style=flat)](https://github.com/Arnaud-Chadal/oh-tomate/releases) [![Static Badge](https://img.shields.io/badge/python-3.11%7C3.12%7C3.13-purple?style=flat&link=https%3A%2F%2Fwww.python.org%2Fdownloads%2F)](https://www.python.org/downloads/) [![Static Badge](https://img.shields.io/badge/pygame-2.6.1-yellow?style=flat&link=https%3A%2F%2Fpypi.org%2Fproject%2Fpygame%2F)](https://www.pygame.org/news)
 
 ## About OH ! Tomate
 
@@ -48,7 +48,7 @@ Lastly, you can find some folders like:
 ## Screenshots
 
 | Image                                | Description                                                                                      |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| ------------------------------------ | :------------------------------------------------------------------------------------------------: |
 | Main Menu                            | ![Main Menu Image](readmeImages/image.png)                                                       |
 | Edition Window                       | ![Edition Window](readmeImages/{41327216-8A7E-484E-AD73-2BCAC70BAD44}.png)                       |
 | Import Export Window                 | ![Import Export Window](readmeImages/{44739E5E-D6D1-4DD6-BCEA-3AECCD360AC1}.png)                 |
