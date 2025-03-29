@@ -10,8 +10,7 @@
 
 If you're new, you can directly download the latest version and just have fun! For more information on how to install the package, see : [Installation Instruction](https://github.com/Arnaud-Chadal/oh-tomate/wiki/Installation-and-usage).
 
-However, we recommand you to learn a little bit about automate before diving into this incredible app. You can learn basic and more advance knowledge directly in our wiki : [Learn about automate](https://github.com/Arnaud-Chadal/oh-tomate/wiki/Learn-about-automate).
-
+However, we recommend you to learn a little bit about automate before diving into this incredible app. You can learn basic and more advanced knowledge directly in our wiki : [Learn about automate](https://github.com/Arnaud-Chadal/oh-tomate/wiki/Learn-about-automate).
 ## Organization of the project
 
 In our app, you can find the .py files and other folders.
