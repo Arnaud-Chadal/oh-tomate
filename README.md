@@ -25,7 +25,7 @@ Automate.py, node.py, button.py, graphicLink.py, graphicNode.py are all files th
 | ------------------------------------ | ----------------------------------------------------------------------------------- |
 | Node.py                      | This class represents a node/a state. Each node has a name (which is an int) and a list of links to other nodes.                                            |
 | Automate.py | This class is one of the most important classes. It's basically a collection of all current nodes. In this class, you will find functions that will modify the automate (Determinize, Minimize...) and others to check its state |
-| GraphicLink.py & GraphicNode.py | Those files are ONLY used to represent a state and a link **graphicaly**. We don't use them in algorithm and in automate.py. |
+| GraphicLink.py & GraphicNode.py | Those files are ONLY used to represent a state and a link **graphically**. We don't use them in algorithm and in automate.py. |
 | Button.py | Button.py is different than the other one because it exists just to make our graphic code smaller and more readable |
 
 ### UI
