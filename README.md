@@ -41,7 +41,7 @@ GraphicWindow.py and menu.py are files used to display something onto the user's
 
 Lastly, you can find some folders like:
 - automates : this folder contains preset of automate that you can open using the LOAD button
-- images : this folder contains all images used to represent a node graphicaly
+- images : this folder contains all images used to represent a node graphically
 - src : this folder contains the sounds used by the app
 
 ## Screenshots
