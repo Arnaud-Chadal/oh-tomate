@@ -34,7 +34,7 @@ GraphicWindow.py and menu.py are files used to display something onto the user's
 
 | Name of the File                                | Description                                                                         |
 | ------------------------------------ | ----------------------------------------------------------------------------------- |
-| GraphicWindow.py                      | This file is our biggest one. It is used every time you're playing with an automate because it's the one that wil display the node, the link, but also manage the user input etc... |
+| GraphicWindow.py                      | This file is our biggest one. It is used every time you're playing with an automate because it's the one that will display the node, the link, but also manage the user input etc... |
 | Main.py | Main.py is the main menu of our app. You run this one to run the entire app. |
 
 ### Folders
